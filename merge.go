@@ -244,98 +244,38 @@ func makeSplitModifiers(conf *config) splitModifiersFn {
 	}
 }
 
-// // sanitizeCSSClassName replaces disallowed characters in CSS class names with a replacement string.
-// // CSS class names can contain letters (a-z, A-Z), digits (0-9), hyphens (-), and underscores (_),
-// // but cannot start with a digit, hyphen, or underscore.
-// func sanitizeCSSClassName(className string, replacement string) string {
-// 	if className == "" {
-// 		return ""
-// 	}
-//
-// 	// Handle the first character separately to enforce it must be a letter
-// 	var result strings.Builder
-// 	firstChar := rune(className[0])
-// 	if unicode.IsLetter(firstChar) {
-// 		result.WriteRune(firstChar)
-// 	} else {
-// 		result.WriteString(replacement)
-// 	}
-//
-// 	// Process the remaining characters
-// 	for _, char := range className[1:] {
-// 		if unicode.IsLetter(char) || unicode.IsDigit(char) || char == '-' || char == '_' {
-// 			result.WriteRune(char)
-// 		} else {
-// 			result.WriteString(replacement)
-// 		}
-// 	}
-//
-// 	return result.String()
-// }
-
 // LintReport represents a report of duplicate merged class values
 type LintReport struct {
-	// MergedValue is the merged class string that has duplicates
-	MergedValue string
-	// OriginalClasses is a list of original class combinations that merge to the same value
-	OriginalClasses []string
+	Warnings []string
+}
+
+func (r *LintReport) String() string {
+	return fmt.Sprintf(`
+		Warnings:
+		%s
+`, strings.Join(r.Warnings, "\n"))
 }
 
 // Lint checks for multiple different class combinations that merge to the same final value
 // Returns a slice of LintReport structures identifying duplicates
-func Lint() []LintReport {
-	// Create a map of merged class strings to original class strings
-	mergedToOriginal := make(map[string][]string)
-	var reports []LintReport
-
-	// First, add all the current class mappings to the internal maps
-	// This ensures we're not relying solely on cached maps from previous operations
-	mapMutex.RLock()
-	for original, generated := range ClassMapStr {
-		merged, exists := GenClassMergeStr[generated]
-		if !exists {
-			continue // Skip if no merged value exists
-		}
-
-		mergedToOriginal[merged] = append(mergedToOriginal[merged], "'"+original+"'")
-	}
-	mapMutex.RUnlock()
-
-	// Look for cases where different original classes result in the same merged output
-	for merged, originals := range mergedToOriginal {
-		if len(originals) > 1 {
-			reports = append(reports, LintReport{
-				MergedValue:     merged,
-				OriginalClasses: originals,
-			})
-		}
-	}
-
-	return reports
+func Lint() string {
+	report := lint(ClassMapStr, GenClassMergeStr)
+	return report.String()
 }
 
-// LintString returns a formatted string representation of the lint results
-// The output format is designed to be easily readable, showing each merged value
-// and the original class combinations that produce it
-func LintString() string {
-	reports := Lint()
-	if len(reports) == 0 {
-		return "No duplicate class combinations found."
-	}
-
-	var result strings.Builder
-	result.WriteString(fmt.Sprintf("Found %d cases where multiple class combinations merge to the same value:\n\n", len(reports)))
-
-	for i, report := range reports {
-		result.WriteString(fmt.Sprintf("%d. Merged value: \"%s\"\n", i+1, report.MergedValue))
-		result.WriteString("   Original combinations:\n")
-
-		for j, original := range report.OriginalClasses {
-			result.WriteString(fmt.Sprintf("   %d.%d. \"%s\"\n", i+1, j+1, original))
+func lint(classMapStr, genClassMergeStr map[string]string) LintReport {
+	report := LintReport{}
+	for gen, genMerged := range genClassMergeStr {
+		for orig, class := range classMapStr {
+			if gen == class {
+				if genMerged != orig {
+					report.Warnings = append(
+						report.Warnings,
+						fmt.Sprintf("\n\n '%s' has been merged to '%s'", orig, genMerged),
+					)
+				}
+			}
 		}
-
-		result.WriteString("\n")
 	}
-
-	return result.String()
+	return report
 }
