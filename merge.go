@@ -223,6 +223,9 @@ func makeSplitModifiers(conf *config) splitModifiersFn {
 		}
 
 		baseClassWithImportant := className[modifierStart:]
+		if len(baseClassWithImportant) == 0 {
+			return "", nil, false, -1
+		}
 		hasImportant := baseClassWithImportant[0] == byte(conf.ImportantModifier)
 
 		var baseClass string
