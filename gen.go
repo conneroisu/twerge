@@ -49,14 +49,25 @@ func It(classes string) string {
 	return classname
 }
 
-// If returns the class name if the condition is true, otherwise it returns the second class name.
+// If returns a short unique CSS class name from the merged classes taking an additional boolean parameter.
+//
+// If the class name already exists, it will return the existing class name.
 //
 // If the class name does not exist, it will generate a new class name and return it.
-func If(conf bool, trueClass, falseClass string) string {
-	if conf {
-		return It(trueClass)
+func If(cond bool, trueClass, falseClass string) string {
+	if className, exists := ClassMapStr[trueClass]; exists && cond {
+		return className
 	}
-	return It(falseClass)
+	if className, exists := ClassMapStr[falseClass]; exists && !cond {
+		return className
+	}
+
+	trueEval := It(trueClass)
+	falseEval := It(falseClass)
+	if cond {
+		return trueEval
+	}
+	return falseEval
 }
 
 func getMapping() classMap {
