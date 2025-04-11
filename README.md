@@ -1,6 +1,12 @@
 # twerge
 <!-- https://pkg.go.dev/github.com/conneroisu/twerge -->
 
+[![Go Reference](https://pkg.go.dev/badge/github.com/conneroisu/twerge.svg)](https://pkg.go.dev/github.com/conneroisu/twerge)
+[![Go Report Card](https://goreportcard.com/badge/github.com/conneroisu/twerge)](https://goreportcard.com/report/github.com/conneroisu/twerge)
+[![GoDoc](https://godoc.org/github.com/conneroisu/twerge?status.svg)](https://godoc.org/github.com/conneroisu/twerge)
+
+![Logo](./assets/twerge.png)
+
 generates tailwind merges and classes from go templ sources
 
 <!-- gomarkdoc:embed:start -->
