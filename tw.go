@@ -2,12 +2,15 @@ package twerge
 
 import (
 	"bytes"
+	"context"
 	"fmt"
+	"io"
 	"os"
 	"slices"
 	"sort"
 	"strings"
 
+	"github.com/a-h/templ"
 	"github.com/conneroisu/twerge/intneral/files"
 	"github.com/dave/jennifer/jen"
 )
@@ -21,10 +24,17 @@ const (
 
 // CodeGen generates all the code needed to use Twerge statically.
 func CodeGen(
+	goPath string,
 	cssPath string,
 	htmlPath string,
-	goPath string,
+	comps ...templ.Component,
 ) error {
+	for _, comp := range comps {
+		err := comp.Render(context.Background(), io.Discard)
+		if err != nil {
+			return err
+		}
+	}
 	err := GenerateCSS(cssPath)
 	if err != nil {
 		return err
