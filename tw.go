@@ -97,7 +97,7 @@ func GenerateCSS(
 	// 	builder.WriteString(merged)
 	// 	builder.WriteString("; \n}\n")
 	// }
-	for givenClasses, gendClass := range ClassMapStr {
+	for givenClasses, gendClass := range sortMap(ClassMapStr) {
 		// if slices.Contains(gendClasses, gendClass) {
 		// 	continue
 		// }
