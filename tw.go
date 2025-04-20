@@ -6,8 +6,8 @@ import (
 	"fmt"
 	"io"
 	"os"
-	"slices"
 	"sort"
+	"strconv"
 	"strings"
 
 	"github.com/a-h/templ"
@@ -87,20 +87,20 @@ func GenerateCSS(
 	// Get all keys and sort them for consistent output
 
 	var builder strings.Builder
-	var gendClasses []string
-	for generated, merged := range sortMap(GenClassMergeStr) {
-		gendClasses = append(gendClasses, generated)
-		// Create a CSS rule using the generated class name and the merged Tailwind classes
-		builder.WriteString(".")
-		builder.WriteString(generated)
-		builder.WriteString(" { \n\t@apply ")
-		builder.WriteString(merged)
-		builder.WriteString("; \n}\n")
-	}
+	// var gendClasses []string
+	// for generated, merged := range sortMap(GenClassMergeStr) {
+	// 	gendClasses = append(gendClasses, generated)
+	// 	// Create a CSS rule using the generated class name and the merged Tailwind classes
+	// 	builder.WriteString(".")
+	// 	builder.WriteString(generated)
+	// 	builder.WriteString(" { \n\t@apply ")
+	// 	builder.WriteString(merged)
+	// 	builder.WriteString("; \n}\n")
+	// }
 	for givenClasses, gendClass := range ClassMapStr {
-		if slices.Contains(gendClasses, gendClass) {
-			continue
-		}
+		// if slices.Contains(gendClasses, gendClass) {
+		// 	continue
+		// }
 		builder.WriteString(".")
 		builder.WriteString(gendClass)
 		builder.WriteString(" { \n\t@apply ")
@@ -135,15 +135,9 @@ func GenerateHTML(
 	buf.WriteString("<div class=\"")
 	buf.WriteString("mb-4")
 	buf.WriteString("\"></div>\n")
-	for k := range sortMap(GenClassMergeStr) {
-		// Create a CSS rule using the generated class name and the merged Tailwind classes
+	for i := range len(ClassMapStr) {
 		buf.WriteString("<div class=\"")
-		buf.WriteString(k)
-		buf.WriteString("\"></div>\n")
-	}
-	for _, v := range sortMap(ClassMapStr) {
-		buf.WriteString("<div class=\"")
-		buf.WriteString(v)
+		buf.WriteString(strconv.Itoa(i))
 		buf.WriteString("\"></div>\n")
 	}
 
