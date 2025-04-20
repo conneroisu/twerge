@@ -137,7 +137,7 @@ func GenerateHTML(
 	buf.WriteString("\"></div>\n")
 	for i := range len(ClassMapStr) {
 		buf.WriteString("<div class=\"")
-		buf.WriteString(strconv.Itoa(i))
+		buf.WriteString("tw-" + strconv.Itoa(i))
 		buf.WriteString("\"></div>\n")
 	}
 
