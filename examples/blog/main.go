@@ -37,41 +37,50 @@ func AddRoutes(
 ) error {
 	// Home page
 	mux.Handle("/{$}", templ.Handler(views.HomePage()))
-	
+
 	// Static assets
 	mux.Handle("/dist/", http.FileServer(http.FS(static.Assets)))
-	
+
 	// Article pages
 	mux.Handle("/articles", templ.Handler(views.ArticlesPage()))
 	mux.Handle("/articles/{$}", templ.Handler(views.ArticlesPage()))
-	
+
 	// Individual article pages with dynamic ID parameter
 	mux.HandleFunc("/articles/", func(w http.ResponseWriter, r *http.Request) {
 		// Extract the article ID from the URL path
 		path := r.URL.Path
 		if path == "/articles/" || path == "/articles" {
 			// Handle the main articles page
-			views.ArticlesPage().Render(r.Context(), w)
+			err := views.ArticlesPage().Render(r.Context(), w)
+			if err != nil {
+				log.Printf("Error rendering articles page: %v", err)
+			}
 			return
 		}
-		
+
 		// Extract article ID (everything after "/articles/")
 		id := path[len("/articles/"):]
 		if id != "" {
-			views.ArticleDetailPage(id).Render(r.Context(), w)
+			err := views.ArticleDetailPage(id).Render(r.Context(), w)
+			if err != nil {
+				log.Printf("Error rendering article detail page: %v", err)
+			}
 			return
 		}
-		
+
 		// Fallback to articles list if no specific article requested
-		views.ArticlesPage().Render(r.Context(), w)
+		err := views.ArticlesPage().Render(r.Context(), w)
+		if err != nil {
+			log.Printf("Error rendering articles page: %v", err)
+		}
 	})
-	
+
 	// About page
 	mux.Handle("/about", templ.Handler(views.AboutPage()))
-	
+
 	// Contact page
 	mux.Handle("/contact", templ.Handler(views.ContactPage()))
-	
+
 	return nil
 }
 

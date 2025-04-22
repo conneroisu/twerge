@@ -4,63 +4,24 @@ import "github.com/conneroisu/twerge"
 
 // BaseLayout provides the common HTML structure for all pages
 templ baseHeader() {
-	<!DOCTYPE html>
-	<html lang="en">
-		<head>
-			<meta charset="UTF-8"/>
-			<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-			<title>Blog Example</title>
-			<link rel="stylesheet" href="/dist/styles.css"/>
-		</head>
-		<body class={ twerge.It("bg-white text-gray-900 flex flex-col min-h-screen") }>
-			<header class={ twerge.It("bg-white border-b border-gray-200") }>
-				<div class={ twerge.It("container mx-auto px-4 py-4 flex justify-between items-center") }>
-					<div class={ twerge.It("flex items-center space-x-2") }>
-						<svg xmlns="http://www.w3.org/2000/svg" class={ twerge.It("h-8 w-8 text-blue-600") } fill="none" viewBox="0 0 24 24" stroke="currentColor">
-							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 5c7.18 0 13 5.82 13 13M6 11a7 7 0 017 7m-6 0a1 1 0 11-2 0 1 1 0 012 0z"></path>
-						</svg>
-						<h1 class={ twerge.It("text-2xl font-bold text-blue-600") }>twerge Blog</h1>
-					</div>
-					<nav>
-						<ul class={ twerge.It("flex space-x-6") }>
-							<li><a href="/" class={ twerge.It("hover:text-blue-600 transition-colors") }>Home</a></li>
-							<li><a href="/articles" class={ twerge.It("hover:text-blue-600 transition-colors") }>Articles</a></li>
-							<li><a href="/about" class={ twerge.It("hover:text-blue-600 transition-colors") }>About</a></li>
-							<li><a href="/contact" class={ twerge.It("hover:text-blue-600 transition-colors") }>Contact</a></li>
-						</ul>
-					</nav>
-				</div>
-			</header>
-			<main class={ twerge.It("container mx-auto px-4 py-8 flex-grow") }>
-				<div class={ twerge.It("max-w-4xl mx-auto") }>
-					<slot></slot>
-					<slot></slot>
-					<slot name="content"></slot>
-					<slot name="content"></slot>
-					@baseFooter()
-					<slot name="footer"></slot>
-					<slot name="footer"></slot>
-				</div>
-			</main>
-			<footer class={ twerge.It("bg-gray-100 border-t border-gray-200 py-8 mt-12") }>
-				<div class={ twerge.It("container mx-auto px-4") }>
-					<div class={ twerge.It("flex flex-col md:flex-row justify-between items-center") }>
-						<div class={ twerge.It("mb-4 md:mb-0") }>
-							<h2 class={ twerge.It("text-xl font-semibold text-blue-600") }>twerge Blog</h2>
-							<p class={ twerge.It("text-gray-600") }>Modern TailwindCSS integration for Go-templ</p>
-						</div>
-						<div>
-							<ul class={ twerge.It("flex space-x-4") }>
-								<li><a href="https://github.com/conneroisu/twerge" class={ twerge.It("text-gray-600 hover:text-blue-600 transition-colors") }>GitHub</a></li>
-								<li><a href="/rss" class={ twerge.It("text-gray-600 hover:text-blue-600 transition-colors") }>RSS</a></li>
-								<li><a href="/api" class={ twerge.It("text-gray-600 hover:text-blue-600 transition-colors") }>API</a></li>
-							</ul>
-						</div>
-					</div>
-				</div>
-			</footer>
-		</body>
-	</html>
+	<header class={ twerge.It("bg-white border-b border-gray-200") }>
+		<div class={ twerge.It("container mx-auto px-4 py-4 flex justify-between items-center") }>
+			<div class={ twerge.It("flex items-center space-x-2") }>
+				<svg xmlns="http://www.w3.org/2000/svg" class={ twerge.It("h-8 w-8 text-blue-600") } fill="none" viewBox="0 0 24 24" stroke="currentColor">
+					<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 5c7.18 0 13 5.82 13 13M6 11a7 7 0 017 7m-6 0a1 1 0 11-2 0 1 1 0 012 0z"></path>
+				</svg>
+				<h1 class={ twerge.It("text-2xl font-bold text-blue-600") }>twerge Blog</h1>
+			</div>
+			<nav>
+				<ul class={ twerge.It("flex space-x-6") }>
+					<li><a href="/" class={ twerge.It("hover:text-blue-600 transition-colors") }>Home</a></li>
+					<li><a href="/articles" class={ twerge.It("hover:text-blue-600 transition-colors") }>Articles</a></li>
+					<li><a href="/about" class={ twerge.It("hover:text-blue-600 transition-colors") }>About</a></li>
+					<li><a href="/contact" class={ twerge.It("hover:text-blue-600 transition-colors") }>Contact</a></li>
+				</ul>
+			</nav>
+		</div>
+	</header>
 }
 
 templ baseFooter() {
@@ -88,9 +49,20 @@ templ baseFooter() {
 
 // BaseLayout combines header and footer with content
 templ BaseLayout(content templ.Component) {
-	@baseHeader()
-	@content
-	@baseFooter()
+	<!DOCTYPE html>
+	<html lang="en">
+		<head>
+			<meta charset="UTF-8"/>
+			<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+			<title>Blog Example</title>
+			<link rel="stylesheet" href="/dist/styles.css"/>
+		</head>
+		<body class={ twerge.It("bg-white text-gray-900 flex flex-col min-h-screen") }>
+			@baseHeader()
+			@content
+			@baseFooter()
+		</body>
+	</html>
 }
 
 // HomePageContent is the main content for the home page
