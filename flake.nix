@@ -30,7 +30,7 @@
       pkgs = import inputs.nixpkgs {inherit system overlays;};
       buildGoModule = pkgs.buildGoModule.override {go = pkgs.go_1_24;};
       specificGo = pkg: pkg.override {inherit buildGoModule;};
-    in rec {
+    in {
       devShells.default = let
         scripts = {
           dx = {
