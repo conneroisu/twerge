@@ -2,7 +2,7 @@ package views
 
 import "github.com/conneroisu/twerge"
 
-templ Dashboard() {
+templ Layout(title string) {
 	<!DOCTYPE html>
 	<html lang="en">
 		<head>
@@ -10,6 +10,7 @@ templ Dashboard() {
 			<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 			<title>Dashboard Example</title>
 			<link rel="stylesheet" href="/dist/styles.css"/>
+			<title>{ title }</title>
 		</head>
 		<body class={ twerge.It("bg-gray-100 text-gray-900 flex flex-col min-h-screen") }>
 			<header class={ twerge.It("bg-indigo-700 text-white shadow-lg") }>
@@ -29,88 +30,7 @@ templ Dashboard() {
 					</nav>
 				</div>
 			</header>
-			<main class={ twerge.It("container mx-auto px-4 py-6 flex-grow") }>
-				<div class={ twerge.It("mb-6") }>
-					<h2 class={ twerge.It("text-2xl font-bold text-gray-800 mb-4") }>Overview</h2>
-					<div class={ twerge.It("grid grid-cols-1 md:grid-cols-3 gap-6") }>
-						<div class={ twerge.It("bg-white rounded-lg shadow-md p-6") }>
-							<div class={ twerge.It("flex items-center justify-between") }>
-								<h3 class={ twerge.It("text-gray-500 text-sm font-medium") }>Total Users</h3>
-								<span class={ twerge.It("bg-green-100 text-green-800 text-xs font-semibold px-2 py-1 rounded") }>+12%</span>
-							</div>
-							<p class={ twerge.It("text-3xl font-bold text-gray-800 mt-2") }>24,521</p>
-							<div class={ twerge.It("mt-4 text-sm text-gray-500") }>1,250 new users this week</div>
-						</div>
-						<div class={ twerge.It("bg-white rounded-lg shadow-md p-6") }>
-							<div class={ twerge.It("flex items-center justify-between") }>
-								<h3 class={ twerge.It("text-gray-500 text-sm font-medium") }>Total Revenue</h3>
-								<span class={ twerge.It("bg-green-100 text-green-800 text-xs font-semibold px-2 py-1 rounded") }>+5%</span>
-							</div>
-							<p class={ twerge.It("text-3xl font-bold text-gray-800 mt-2") }>$45,428</p>
-							<div class={ twerge.It("mt-4 text-sm text-gray-500") }>$2,150 new revenue this week</div>
-						</div>
-						<div class={ twerge.It("bg-white rounded-lg shadow-md p-6") }>
-							<div class={ twerge.It("flex items-center justify-between") }>
-								<h3 class={ twerge.It("text-gray-500 text-sm font-medium") }>Total Orders</h3>
-								<span class={ twerge.It("bg-red-100 text-red-800 text-xs font-semibold px-2 py-1 rounded") }>-2%</span>
-							</div>
-							<p class={ twerge.It("text-3xl font-bold text-gray-800 mt-2") }>12,234</p>
-							<div class={ twerge.It("mt-4 text-sm text-gray-500") }>345 new orders this week</div>
-						</div>
-					</div>
-				</div>
-				<div class={ twerge.It("mb-6") }>
-					<h2 class={ twerge.It("text-2xl font-bold text-gray-800 mb-4") }>Recent Activity</h2>
-					<div class={ twerge.It("bg-white rounded-lg shadow-md overflow-hidden") }>
-						<table class={ twerge.It("min-w-full divide-y divide-gray-200") }>
-							<thead class={ twerge.It("bg-gray-50") }>
-								<tr>
-									<th class={ twerge.It("px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider") }>ID</th>
-									<th class={ twerge.It("px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider") }>Customer</th>
-									<th class={ twerge.It("px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider") }>Amount</th>
-									<th class={ twerge.It("px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider") }>Status</th>
-									<th class={ twerge.It("px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider") }>Date</th>
-								</tr>
-							</thead>
-							<tbody class={ twerge.It("bg-white divide-y divide-gray-200") }>
-								<tr>
-									<td class={ twerge.It("px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900") }>#1342</td>
-									<td class={ twerge.It("px-6 py-4 whitespace-nowrap text-sm text-gray-500") }>John Smith</td>
-									<td class={ twerge.It("px-6 py-4 whitespace-nowrap text-sm text-gray-500") }>$125.00</td>
-									<td class={ twerge.It("px-6 py-4 whitespace-nowrap") }>
-										<span class={ twerge.It("px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800") }>
-											Completed
-										</span>
-									</td>
-									<td class={ twerge.It("px-6 py-4 whitespace-nowrap text-sm text-gray-500") }>Apr 22, 2025</td>
-								</tr>
-								<tr>
-									<td class={ twerge.It("px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900") }>#1341</td>
-									<td class={ twerge.It("px-6 py-4 whitespace-nowrap text-sm text-gray-500") }>Jane Doe</td>
-									<td class={ twerge.It("px-6 py-4 whitespace-nowrap text-sm text-gray-500") }>$75.50</td>
-									<td class={ twerge.It("px-6 py-4 whitespace-nowrap") }>
-										<span class={ twerge.It("px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800") }>
-											Processing
-										</span>
-									</td>
-									<td class={ twerge.It("px-6 py-4 whitespace-nowrap text-sm text-gray-500") }>Apr 21, 2025</td>
-								</tr>
-								<tr>
-									<td class={ twerge.It("px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900") }>#1340</td>
-									<td class={ twerge.It("px-6 py-4 whitespace-nowrap text-sm text-gray-500") }>Bob Johnson</td>
-									<td class={ twerge.It("px-6 py-4 whitespace-nowrap text-sm text-gray-500") }>$200.00</td>
-									<td class={ twerge.It("px-6 py-4 whitespace-nowrap") }>
-										<span class={ twerge.It("px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800") }>
-											Refunded
-										</span>
-									</td>
-									<td class={ twerge.It("px-6 py-4 whitespace-nowrap text-sm text-gray-500") }>Apr 20, 2025</td>
-								</tr>
-							</tbody>
-						</table>
-					</div>
-				</div>
-			</main>
+			{ children... }
 			<footer class={ twerge.It("bg-gray-800 text-white py-4") }>
 				<div class={ twerge.It("container mx-auto px-4 text-center text-sm") }>
 					&copy; 2025 Dashboard Example. Built with <a href="https://github.com/conneroisu/twerge" class={ twerge.It("text-indigo-300 hover:text-indigo-100") }>twerge</a>.

@@ -10,7 +10,7 @@ func SetCache() {
 var ClassMapStr = map[string]twerge.CacheValue{
 	"bg-gray-100 text-gray-900 flex flex-col min-h-screen": twerge.CacheValue{
 		Generated: "tw-0",
-		Merged:    "bg-gray-100 text-gray-900 flex flex-col min-h-screen",
+		Merged:    "flex-col min-h-screen bg-gray-100 text-gray-900 flex",
 	},
 	"bg-gray-50": twerge.CacheValue{
 		Generated: "tw-21",
@@ -18,11 +18,11 @@ var ClassMapStr = map[string]twerge.CacheValue{
 	},
 	"bg-gray-800 text-white py-4": twerge.CacheValue{
 		Generated: "tw-30",
-		Merged:    "py-4 bg-gray-800 text-white",
+		Merged:    "bg-gray-800 text-white py-4",
 	},
 	"bg-green-100 text-green-800 text-xs font-semibold px-2 py-1 rounded": twerge.CacheValue{
 		Generated: "tw-15",
-		Merged:    "text-green-800 py-1 rounded px-2 bg-green-100 text-xs font-semibold",
+		Merged:    "rounded px-2 bg-green-100 text-green-800 py-1 text-xs font-semibold",
 	},
 	"bg-indigo-700 text-white shadow-lg": twerge.CacheValue{
 		Generated: "tw-1",
@@ -30,7 +30,7 @@ var ClassMapStr = map[string]twerge.CacheValue{
 	},
 	"bg-red-100 text-red-800 text-xs font-semibold px-2 py-1 rounded": twerge.CacheValue{
 		Generated: "tw-18",
-		Merged:    "text-xs font-semibold py-1 text-red-800 px-2 rounded bg-red-100",
+		Merged:    "text-xs font-semibold bg-red-100 text-red-800 px-2 py-1 rounded",
 	},
 	"bg-white divide-y divide-gray-200": twerge.CacheValue{
 		Generated: "tw-23",
@@ -38,23 +38,23 @@ var ClassMapStr = map[string]twerge.CacheValue{
 	},
 	"bg-white rounded-lg shadow-md overflow-hidden": twerge.CacheValue{
 		Generated: "tw-19",
-		Merged:    "bg-white rounded-lg shadow-md overflow-hidden",
+		Merged:    "rounded-lg shadow-md overflow-hidden bg-white",
 	},
 	"bg-white rounded-lg shadow-md p-6": twerge.CacheValue{
 		Generated: "tw-12",
-		Merged:    "shadow-md rounded-lg bg-white p-6",
+		Merged:    "bg-white p-6 shadow-md rounded-lg",
 	},
 	"container mx-auto px-4 py-3 flex justify-between items-center": twerge.CacheValue{
 		Generated: "tw-2",
-		Merged:    "flex justify-between items-center py-3 container mx-auto px-4",
+		Merged:    "mx-auto px-4 py-3 flex justify-between items-center container",
 	},
 	"container mx-auto px-4 py-6 flex-grow": twerge.CacheValue{
 		Generated: "tw-8",
-		Merged:    "flex-grow py-6 container mx-auto px-4",
+		Merged:    "flex-grow container px-4 py-6 mx-auto",
 	},
 	"container mx-auto px-4 text-center text-sm": twerge.CacheValue{
 		Generated: "tw-31",
-		Merged:    "px-4 mx-auto text-center text-sm container",
+		Merged:    "px-4 text-center text-sm container mx-auto",
 	},
 	"flex items-center justify-between": twerge.CacheValue{
 		Generated: "tw-13",
@@ -78,7 +78,7 @@ var ClassMapStr = map[string]twerge.CacheValue{
 	},
 	"hover:text-indigo-200 transition-colors": twerge.CacheValue{
 		Generated: "tw-7",
-		Merged:    "transition-colors hover:text-indigo-200",
+		Merged:    "hover:text-indigo-200 transition-colors",
 	},
 	"mb-6": twerge.CacheValue{
 		Generated: "tw-9",
@@ -90,35 +90,35 @@ var ClassMapStr = map[string]twerge.CacheValue{
 	},
 	"mt-4 text-sm text-gray-500": twerge.CacheValue{
 		Generated: "tw-17",
-		Merged:    "text-sm text-gray-500 mt-4",
+		Merged:    "text-gray-500 mt-4 text-sm",
 	},
 	"px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800": twerge.CacheValue{
 		Generated: "tw-29",
-		Merged:    "rounded-full text-xs text-gray-800 inline-flex font-semibold bg-gray-100 px-2 leading-5",
+		Merged:    "rounded-full bg-gray-100 text-gray-800 px-2 text-xs font-semibold inline-flex leading-5",
 	},
 	"px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800": twerge.CacheValue{
 		Generated: "tw-27",
-		Merged:    "inline-flex font-semibold text-xs rounded-full text-green-800 leading-5 bg-green-100 px-2",
+		Merged:    "bg-green-100 text-green-800 px-2 inline-flex leading-5 font-semibold text-xs rounded-full",
 	},
 	"px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800": twerge.CacheValue{
 		Generated: "tw-28",
-		Merged:    "leading-5 bg-yellow-100 text-yellow-800 px-2 text-xs rounded-full inline-flex font-semibold",
+		Merged:    "px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800",
 	},
 	"px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider": twerge.CacheValue{
 		Generated: "tw-22",
-		Merged:    "text-left font-medium text-gray-500 px-6 py-3 text-xs uppercase tracking-wider",
+		Merged:    "text-xs font-medium text-gray-500 uppercase tracking-wider px-6 py-3 text-left",
 	},
 	"px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900": twerge.CacheValue{
 		Generated: "tw-24",
-		Merged:    "text-gray-900 px-6 py-4 whitespace-nowrap font-medium text-sm",
+		Merged:    "py-4 font-medium px-6 whitespace-nowrap text-sm text-gray-900",
 	},
 	"px-6 py-4 whitespace-nowrap text-sm text-gray-500": twerge.CacheValue{
 		Generated: "tw-25",
-		Merged:    "px-6 py-4 whitespace-nowrap text-sm text-gray-500",
+		Merged:    "py-4 whitespace-nowrap text-sm text-gray-500 px-6",
 	},
 	"px-6 py-4 whitespace-nowrap": twerge.CacheValue{
 		Generated: "tw-26",
-		Merged:    "py-4 whitespace-nowrap px-6",
+		Merged:    "whitespace-nowrap px-6 py-4",
 	},
 	"text-2xl font-bold text-gray-800 mb-4": twerge.CacheValue{
 		Generated: "tw-10",
@@ -126,7 +126,7 @@ var ClassMapStr = map[string]twerge.CacheValue{
 	},
 	"text-3xl font-bold text-gray-800 mt-2": twerge.CacheValue{
 		Generated: "tw-16",
-		Merged:    "mt-2 text-3xl font-bold text-gray-800",
+		Merged:    "font-bold text-gray-800 mt-2 text-3xl",
 	},
 	"text-gray-500 text-sm font-medium": twerge.CacheValue{
 		Generated: "tw-14",
@@ -134,10 +134,10 @@ var ClassMapStr = map[string]twerge.CacheValue{
 	},
 	"text-indigo-300 hover:text-indigo-100": twerge.CacheValue{
 		Generated: "tw-32",
-		Merged:    "text-indigo-300 hover:text-indigo-100",
+		Merged:    "hover:text-indigo-100 text-indigo-300",
 	},
 	"text-xl font-bold": twerge.CacheValue{
 		Generated: "tw-5",
-		Merged:    "text-xl font-bold",
+		Merged:    "font-bold text-xl",
 	},
 }
