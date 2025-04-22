@@ -1,0 +1,60 @@
+package views
+
+import "github.com/conneroisu/twerge"
+
+templ View() {
+	<!DOCTYPE html>
+	<html lang="en">
+		<head>
+			<meta charset="UTF-8"/>
+			<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+			<title>stellar</title>
+			<link rel="stylesheet" href="/dist/styles.css"/>
+		</head>
+		<body class={ twerge.It("bg-gray-50 text-gray-900 flex flex-col min-h-screen") }>
+			<header class={ twerge.It("bg-indigo-600 text-white shadow-md") }>
+				<div class={ twerge.It("container mx-auto px-4 py-4 flex justify-between items-center") }>
+					<div class={ twerge.It("flex items-center space-x-2") }>
+						<svg xmlns="http://www.w3.org/2000/svg" class={ twerge.It("h-8 w-8") } fill="none" viewBox="0 0 24 24" stroke="currentColor">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"></path>
+						</svg>
+						<h1 class={ twerge.It("text-2xl font-bold") }>stellar</h1>
+					</div>
+					<nav>
+						<ul class={ twerge.It("flex space-x-6") }>
+							<li><a href="/" class={ twerge.It("hover:text-indigo-200 transition-colors") }>Home</a></li>
+							<li><a href="/about" class={ twerge.It("hover:text-indigo-200 transition-colors") }>About</a></li>
+							<li><a href="/contact" class={ twerge.It("hover:text-indigo-200 transition-colors") }>Contact</a></li>
+						</ul>
+					</nav>
+				</div>
+			</header>
+			<main class={ twerge.It("container mx-auto px-4 py-6 flex-grow") }>
+				<!-- Page content will be inserted here -->
+				Content
+			</main>
+			<footer class={ twerge.It("bg-gray-800 text-white py-6") }>
+				<div class={ twerge.It("container mx-auto px-4") }>
+					<div class={ twerge.It("flex flex-col md:flex-row justify-between items-center") }>
+						<div class={ twerge.It("mb-4 md:mb-0") }>
+							<h2 class={ twerge.It("text-xl font-semibold") }>stellar</h2>
+							<p class={ twerge.It("text-gray-400") }>Stellar Contracting Services</p>
+						</div>
+						<div>
+							<ul class={ twerge.It("flex space-x-4") }>
+								<li><a href="https://github.com/conneroisu/twerge" class={ twerge.It("text-gray-400 hover:text-white transition-colors") }>GitHub</a></li>
+								<li><a href="/docs" class={ twerge.It("text-gray-400 hover:text-white transition-colors") }>Documentation</a></li>
+								<li><a href="/api" class={ twerge.It("text-gray-400 hover:text-white transition-colors") }>API</a></li>
+							</ul>
+						</div>
+					</div>
+					<div class={ twerge.It("mt-4 text-center text-gray-400 text-sm") }>
+						&copy; 1999 stellar. All rights reserved.
+					</div>
+				</div>
+			</footer>
+			<!-- Custom JavaScript -->
+			<script src="/static/js/main.js"></script>
+		</body>
+	</html>
+}

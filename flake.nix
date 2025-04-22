@@ -25,13 +25,7 @@
   };
 
   outputs = inputs @ {flake-utils, ...}:
-    flake-utils.lib.eachSystem [
-      "x86_64-linux"
-      "i686-linux"
-      "x86_64-darwin"
-      "aarch64-linux"
-      "aarch64-darwin"
-    ] (system: let
+    flake-utils.lib.eachDefaultSystem (system: let
       overlays = [(final: prev: {final.go = prev.go_1_24;})];
       pkgs = import inputs.nixpkgs {inherit system overlays;};
       buildGoModule = pkgs.buildGoModule.override {go = pkgs.go_1_24;};

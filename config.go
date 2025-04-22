@@ -11,13 +11,14 @@ var (
 		"full":   true,
 		"screen": true,
 	}
-	lengthUnitRegex = regexp.MustCompile(`\d+(%|px|r?em|[sdl]?v([hwib]|min|max)|pt|pc|in|cm|mm|cap|ch|ex|r?lh|cq(w|h|i|b|min|max))|\b(calc|min|max|clamp)\(.+\)|^0$`)
-	colorFnRegex    = regexp.MustCompile(`^(rgba?|hsla?|hwb|(ok)?(lab|lch))\(.+\)$`)
-	arbitraryRegex  = regexp.MustCompile(`(?i)^\[(?:([a-z-]+):)?(.+)\]$`)
-	shirtPattern    = regexp.MustCompile(`^(\d+(\.\d+)?)?(xs|sm|md|lg|xl)$`)
-	shardowPattern  = regexp.MustCompile(`^(inset_)?-?((\d+)?\.?(\d+)[a-z]+|0)_-?((\d+)?\.?(\d+)[a-z]+|0)`)
-	sizeLabels      = map[string]bool{"length": true, "size": true, "percentage": true}
-	imageLabels     = map[string]bool{"image": true, "url": true}
+	lengthUnitRegex        = regexp.MustCompile(`\d+(%|px|r?em|[sdl]?v([hwib]|min|max)|pt|pc|in|cm|mm|cap|ch|ex|r?lh|cq(w|h|i|b|min|max))|\b(calc|min|max|clamp)\(.+\)|^0$`)
+	colorFnRegex           = regexp.MustCompile(`^(rgba?|hsla?|hwb|(ok)?(lab|lch))\(.+\)$`)
+	arbitraryRegex         = regexp.MustCompile(`(?i)^\[(?:([a-z-]+):)?(.+)\]$`)
+	shirtPattern           = regexp.MustCompile(`^(\d+(\.\d+)?)?(xs|sm|md|lg|xl)$`)
+	shardowPattern         = regexp.MustCompile(`^(inset_)?-?((\d+)?\.?(\d+)[a-z]+|0)_-?((\d+)?\.?(\d+)[a-z]+|0)`)
+	arbitraryPropertyRegex = regexp.MustCompile(`^\[(.+)\]$`)
+	sizeLabels             = map[string]bool{"length": true, "size": true, "percentage": true}
+	imageLabels            = map[string]bool{"image": true, "url": true}
 )
 
 // config is the configuration for the template merger
