@@ -8,22 +8,76 @@ func SetCache() {
 }
 
 var ClassMapStr = map[string]twerge.CacheValue{
-	"bg-gray-50 text-gray-900 flex flex-col min-h-screen":           twerge.CacheValue{"tw-0", "bg-gray-50 text-gray-900 flex flex-col min-h-screen"},
-	"bg-gray-800 text-white py-6":                                   twerge.CacheValue{"tw-9", "bg-gray-800 text-white py-6"},
-	"bg-indigo-600 text-white shadow-md":                            twerge.CacheValue{"tw-1", "bg-indigo-600 text-white shadow-md"},
-	"container mx-auto px-4 py-4 flex justify-between items-center": twerge.CacheValue{"tw-2", "px-4 py-4 container flex justify-between items-center mx-auto"},
-	"container mx-auto px-4 py-6 flex-grow":                         twerge.CacheValue{"tw-8", "flex-grow mx-auto container px-4 py-6"},
-	"container mx-auto px-4":                                        twerge.CacheValue{"tw-10", "container mx-auto px-4"},
-	"flex flex-col md:flex-row justify-between items-center":        twerge.CacheValue{"tw-11", "flex flex-col md:flex-row justify-between items-center"},
-	"flex items-center space-x-2":                                   twerge.CacheValue{"tw-3", "flex items-center space-x-2"},
-	"flex space-x-4":                                                twerge.CacheValue{"tw-15", "flex space-x-4"},
-	"flex space-x-6":                                                twerge.CacheValue{"tw-6", "flex space-x-6"},
-	"h-8 w-8":                                                       twerge.CacheValue{"tw-4", "h-8 w-8"},
-	"hover:text-indigo-200 transition-colors":                       twerge.CacheValue{"tw-7", "transition-colors hover:text-indigo-200"},
-	"mb-4 md:mb-0":                                                  twerge.CacheValue{"tw-12", "md:mb-0 mb-4"},
-	"mt-4 text-center text-gray-400 text-sm":                        twerge.CacheValue{"tw-17", "mt-4 text-center text-gray-400 text-sm"},
-	"text-2xl font-bold":                                            twerge.CacheValue{"tw-5", "font-bold text-2xl"},
-	"text-gray-400 hover:text-white transition-colors":              twerge.CacheValue{"tw-16", "text-gray-400 hover:text-white transition-colors"},
-	"text-gray-400":                                                 twerge.CacheValue{"tw-14", "text-gray-400"},
-	"text-xl font-semibold":                                         twerge.CacheValue{"tw-13", "text-xl font-semibold"},
+	"bg-gray-50 text-gray-900 flex flex-col min-h-screen": twerge.CacheValue{
+		Generated: "tw-0",
+		Merged:    "min-h-screen bg-gray-50 text-gray-900 flex flex-col",
+	},
+	"bg-gray-800 text-white py-6": twerge.CacheValue{
+		Generated: "tw-9",
+		Merged:    "bg-gray-800 text-white py-6",
+	},
+	"bg-indigo-600 text-white shadow-md": twerge.CacheValue{
+		Generated: "tw-1",
+		Merged:    "bg-indigo-600 text-white shadow-md",
+	},
+	"container mx-auto px-4 py-4 flex justify-between items-center": twerge.CacheValue{
+		Generated: "tw-2",
+		Merged:    "px-4 flex items-center py-4 justify-between container mx-auto",
+	},
+	"container mx-auto px-4 py-6 flex-grow": twerge.CacheValue{
+		Generated: "tw-8",
+		Merged:    "flex-grow container px-4 py-6 mx-auto",
+	},
+	"container mx-auto px-4": twerge.CacheValue{
+		Generated: "tw-10",
+		Merged:    "px-4 container mx-auto",
+	},
+	"flex flex-col md:flex-row justify-between items-center": twerge.CacheValue{
+		Generated: "tw-11",
+		Merged:    "flex flex-col md:flex-row justify-between items-center",
+	},
+	"flex items-center space-x-2": twerge.CacheValue{
+		Generated: "tw-3",
+		Merged:    "flex items-center space-x-2",
+	},
+	"flex space-x-4": twerge.CacheValue{
+		Generated: "tw-15",
+		Merged:    "flex space-x-4",
+	},
+	"flex space-x-6": twerge.CacheValue{
+		Generated: "tw-6",
+		Merged:    "flex space-x-6",
+	},
+	"h-8 w-8": twerge.CacheValue{
+		Generated: "tw-4",
+		Merged:    "h-8 w-8",
+	},
+	"hover:text-indigo-200 transition-colors": twerge.CacheValue{
+		Generated: "tw-7",
+		Merged:    "hover:text-indigo-200 transition-colors",
+	},
+	"mb-4 md:mb-0": twerge.CacheValue{
+		Generated: "tw-12",
+		Merged:    "mb-4 md:mb-0",
+	},
+	"mt-4 text-center text-gray-400 text-sm": twerge.CacheValue{
+		Generated: "tw-17",
+		Merged:    "text-sm mt-4 text-center text-gray-400",
+	},
+	"text-2xl font-bold": twerge.CacheValue{
+		Generated: "tw-5",
+		Merged:    "text-2xl font-bold",
+	},
+	"text-gray-400 hover:text-white transition-colors": twerge.CacheValue{
+		Generated: "tw-16",
+		Merged:    "text-gray-400 hover:text-white transition-colors",
+	},
+	"text-gray-400": twerge.CacheValue{
+		Generated: "tw-14",
+		Merged:    "text-gray-400",
+	},
+	"text-xl font-semibold": twerge.CacheValue{
+		Generated: "tw-13",
+		Merged:    "font-semibold text-xl",
+	},
 }

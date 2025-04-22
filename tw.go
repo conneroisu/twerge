@@ -87,9 +87,9 @@ func generateCSS(
 		return fmt.Errorf("error opening file: %w", err)
 	}
 	defer func() {
-		err := fil.Close()
-		if err != nil {
-			fmt.Printf("error closing css file: %v", err)
+		ferr := fil.Close()
+		if ferr != nil {
+			fmt.Printf("error closing css file: %v", ferr)
 		}
 	}()
 
@@ -176,7 +176,10 @@ func generateGo(
 			d[jen.Lit(k)] = jen.Qual(
 				"github.com/conneroisu/twerge",
 				"CacheValue",
-			).Values(jen.Lit(g.Cache()[k].Generated), jen.Lit(g.Cache()[k].Merged))
+			).Values(jen.Dict{
+				jen.Id("Generated"): jen.Lit(g.Cache()[k].Generated),
+				jen.Id("Merged"):    jen.Lit(g.Cache()[k].Merged),
+			})
 		}
 	}))
 

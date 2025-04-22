@@ -15,8 +15,14 @@ import (
 // As twerge is meant to be used statically, aka at build/compile time,
 // it is trying to maxmimize performance at runtime.
 type CacheValue struct {
+	// Generated is the generated class. It is a short unique CSS class name.
+	//
+	// Example: tw-123
 	Generated string
-	Merged    string
+	// Merged is the merged class. It is the final class name that is used in the CSS.
+	//
+	// Example: min-h-screen bg-gray-50 text-gray-900 flex flex-col
+	Merged string
 }
 
 var defaultGenerator atomic.Pointer[Generator]
@@ -70,19 +76,24 @@ type Handler interface {
 }
 
 // Cache returns the cache of the [Generator].
-func (Generator) Cache() map[string]CacheValue { return defaultGenerator.Load().Handler.Cache() }
+func (Generator) Cache() map[string]CacheValue {
+	return defaultGenerator.Load().Handler.Cache()
+}
 
 // Cache returns the cache of the [Generator].
 func (g *defaultHandler) Cache() map[string]CacheValue { return g.entries }
 
 // SetCache sets the cache of the [Generator].
-func (g *defaultHandler) SetCache(entries map[string]CacheValue) { g.entries = entries }
+func (g *defaultHandler) SetCache(entries map[string]CacheValue) {
+	g.entries = entries
+}
 
 // It returns a short unique CSS class name from the merged classes.
 //
 // If the class name already exists, it will return the existing class name.
 //
-// If the class name does not exist, it will generate a new class name and return it.
+// If the class name does not exist, it will generate a new class name and
+// return it.
 func (g *Generator) It(classes string) string {
 	return g.Handler.It(classes)
 }
