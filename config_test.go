@@ -2,22 +2,44 @@ package twerge
 
 import (
 	"testing"
-
-	"github.com/stretchr/testify/assert"
 )
 
 func TestArbitraryShadow(t *testing.T) {
-	assert.Equal(t, true, isArbitraryShadow("[inset_0_1px_0,inset_0_-1px_0]"))
-	assert.Equal(t, true, isArbitraryShadow("[0_35px_60px_-15px_rgba(0,0,0,0.3)]"))
-	assert.Equal(t, true, isArbitraryShadow("[inset_0_1px_0,inset_0_-1px_0]"))
-	assert.Equal(t, true, isArbitraryShadow("[0_0_#00f]"))
-	assert.Equal(t, true, isArbitraryShadow("[.5rem_0_rgba(5,5,5,5)]"))
-	assert.Equal(t, true, isArbitraryShadow("[-.5rem_0_#123456]"))
-	assert.Equal(t, true, isArbitraryShadow("[0.5rem_-0_#123456]"))
-	assert.Equal(t, true, isArbitraryShadow("[0.5rem_-0.005vh_#123456]"))
-	assert.Equal(t, true, isArbitraryShadow("[0.5rem_-0.005vh]"))
+	if !isArbitraryShadow("[inset_0_1px_0,inset_0_-1px_0]") {
+		t.Error("isArbitraryShadow() should return true")
+	}
+	if !isArbitraryShadow("[0_35px_60px_-15px_rgba(0,0,0,0.3)]") {
+		t.Error("isArbitraryShadow() should return true")
+	}
+	if !isArbitraryShadow("[inset_0_1px_0,inset_0_-1px_0]") {
+		t.Error("isArbitraryShadow() should return true")
+	}
+	if !isArbitraryShadow("[0_0_#00f]") {
+		t.Error("isArbitraryShadow() should return true")
+	}
+	if !isArbitraryShadow("[.5rem_0_rgba(5,5,5,5)]") {
+		t.Error("isArbitraryShadow() should return true")
+	}
+	if !isArbitraryShadow("[-.5rem_0_#123456]") {
+		t.Error("isArbitraryShadow() should return true")
+	}
+	if !isArbitraryShadow("[0.5rem_-0_#123456]") {
+		t.Error("isArbitraryShadow() should return true")
+	}
+	if !isArbitraryShadow("[0.5rem_-0.005vh_#123456]") {
+		t.Error("isArbitraryShadow() should return true")
+	}
+	if !isArbitraryShadow("[0.5rem_-0.005vh]") {
+		t.Error("isArbitraryShadow() should return true")
+	}
 
-	assert.Equal(t, false, isArbitraryShadow("[rgba(5,5,5,5)]"))
-	assert.Equal(t, false, isArbitraryShadow("[#00f]"))
-	assert.Equal(t, false, isArbitraryShadow("[something-else]"))
+	if isArbitraryShadow("[rgba(5,5,5,5)]") {
+		t.Error("isArbitraryShadow() should return false")
+	}
+	if isArbitraryShadow("[#00f]") {
+		t.Error("isArbitraryShadow() should return false")
+	}
+	if isArbitraryShadow("[something-else]") {
+		t.Error("isArbitraryShadow() should return false")
+	}
 }
