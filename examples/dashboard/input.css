@@ -1,0 +1,139 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* twerge:begin */
+/* from bg-green-100 text-green-800 text-xs font-semibold px-2 py-1 rounded */
+.tw-15 { 
+	@apply text-green-800 py-1 rounded px-2 bg-green-100 text-xs font-semibold; 
+}
+/* from container mx-auto px-4 py-3 flex justify-between items-center */
+.tw-2 { 
+	@apply flex justify-between items-center py-3 container mx-auto px-4; 
+}
+/* from hover:text-indigo-200 transition-colors */
+.tw-7 { 
+	@apply transition-colors hover:text-indigo-200; 
+}
+/* from bg-gray-100 text-gray-900 flex flex-col min-h-screen */
+.tw-0 { 
+	@apply bg-gray-100 text-gray-900 flex flex-col min-h-screen; 
+}
+/* from bg-gray-50 */
+.tw-21 { 
+	@apply bg-gray-50; 
+}
+/* from container mx-auto px-4 py-6 flex-grow */
+.tw-8 { 
+	@apply flex-grow py-6 container mx-auto px-4; 
+}
+/* from min-w-full divide-y divide-gray-200 */
+.tw-20 { 
+	@apply min-w-full divide-y divide-gray-200; 
+}
+/* from px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider */
+.tw-22 { 
+	@apply text-left font-medium text-gray-500 px-6 py-3 text-xs uppercase tracking-wider; 
+}
+/* from text-gray-500 text-sm font-medium */
+.tw-14 { 
+	@apply text-gray-500 text-sm font-medium; 
+}
+/* from mb-6 */
+.tw-9 { 
+	@apply mb-6; 
+}
+/* from bg-white divide-y divide-gray-200 */
+.tw-23 { 
+	@apply bg-white divide-y divide-gray-200; 
+}
+/* from container mx-auto px-4 text-center text-sm */
+.tw-31 { 
+	@apply px-4 mx-auto text-center text-sm container; 
+}
+/* from flex items-center space-x-2 */
+.tw-3 { 
+	@apply flex items-center space-x-2; 
+}
+/* from px-6 py-4 whitespace-nowrap */
+.tw-26 { 
+	@apply py-4 whitespace-nowrap px-6; 
+}
+/* from text-3xl font-bold text-gray-800 mt-2 */
+.tw-16 { 
+	@apply mt-2 text-3xl font-bold text-gray-800; 
+}
+/* from bg-gray-800 text-white py-4 */
+.tw-30 { 
+	@apply py-4 bg-gray-800 text-white; 
+}
+/* from flex space-x-6 */
+.tw-6 { 
+	@apply space-x-6 flex; 
+}
+/* from grid grid-cols-1 md:grid-cols-3 gap-6 */
+.tw-11 { 
+	@apply grid grid-cols-1 md:grid-cols-3 gap-6; 
+}
+/* from h-8 w-8 */
+.tw-4 { 
+	@apply h-8 w-8; 
+}
+/* from px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 */
+.tw-24 { 
+	@apply text-gray-900 px-6 py-4 whitespace-nowrap font-medium text-sm; 
+}
+/* from bg-white rounded-lg shadow-md overflow-hidden */
+.tw-19 { 
+	@apply bg-white rounded-lg shadow-md overflow-hidden; 
+}
+/* from flex items-center justify-between */
+.tw-13 { 
+	@apply flex items-center justify-between; 
+}
+/* from mt-4 text-sm text-gray-500 */
+.tw-17 { 
+	@apply text-sm text-gray-500 mt-4; 
+}
+/* from px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800 */
+.tw-28 { 
+	@apply leading-5 bg-yellow-100 text-yellow-800 px-2 text-xs rounded-full inline-flex font-semibold; 
+}
+/* from px-6 py-4 whitespace-nowrap text-sm text-gray-500 */
+.tw-25 { 
+	@apply px-6 py-4 whitespace-nowrap text-sm text-gray-500; 
+}
+/* from text-2xl font-bold text-gray-800 mb-4 */
+.tw-10 { 
+	@apply text-2xl font-bold text-gray-800 mb-4; 
+}
+/* from text-indigo-300 hover:text-indigo-100 */
+.tw-32 { 
+	@apply text-indigo-300 hover:text-indigo-100; 
+}
+/* from bg-indigo-700 text-white shadow-lg */
+.tw-1 { 
+	@apply bg-indigo-700 text-white shadow-lg; 
+}
+/* from bg-red-100 text-red-800 text-xs font-semibold px-2 py-1 rounded */
+.tw-18 { 
+	@apply text-xs font-semibold py-1 text-red-800 px-2 rounded bg-red-100; 
+}
+/* from bg-white rounded-lg shadow-md p-6 */
+.tw-12 { 
+	@apply shadow-md rounded-lg bg-white p-6; 
+}
+/* from px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800 */
+.tw-27 { 
+	@apply inline-flex font-semibold text-xs rounded-full text-green-800 leading-5 bg-green-100 px-2; 
+}
+/* from text-xl font-bold */
+.tw-5 { 
+	@apply text-xl font-bold; 
+}
+/* from px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800 */
+.tw-29 { 
+	@apply rounded-full text-xs text-gray-800 inline-flex font-semibold bg-gray-100 px-2 leading-5; 
+}
+
+/* twerge:end */

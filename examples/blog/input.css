@@ -1,0 +1,286 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* twerge:begin */
+/* from flex items-center text-gray-600 text-sm mb-4 */
+.tw-15 { 
+	@apply mb-4 flex items-center text-gray-600 text-sm; 
+}
+/* from mt-8 pt-8 border-t border-gray-200 */
+.tw-35 { 
+	@apply mt-8 pt-8 border-t border-gray-200; 
+}
+/* from text-5xl font-bold text-gray-900 mb-4 */
+.tw-1 { 
+	@apply text-5xl font-bold text-gray-900 mb-4; 
+}
+/* from text-gray-600 mb-4 */
+.tw-8 { 
+	@apply text-gray-600 mb-4; 
+}
+/* from text-lg font-bold mb-4 */
+.tw-36 { 
+	@apply text-lg font-bold mb-4; 
+}
+/* from flex-shrink-0 mr-4 */
+.tw-21 { 
+	@apply flex-shrink-0 mr-4; 
+}
+/* from hover:text-blue-600 transition-colors */
+.tw-14 { 
+	@apply hover:text-blue-600 transition-colors; 
+}
+/* from space-y-6 */
+.tw-27 { 
+	@apply space-y-6; 
+}
+/* from text-4xl font-bold text-gray-900 mb-6 */
+.tw-19 { 
+	@apply mb-6 text-4xl font-bold text-gray-900; 
+}
+/* from text-4xl font-bold text-gray-900 mb-8 */
+.tw-10 { 
+	@apply font-bold text-gray-900 mb-8 text-4xl; 
+}
+/* from text-blue-600 hover:text-blue-800 */
+.tw-62 { 
+	@apply hover:text-blue-800 text-blue-600; 
+}
+/* from flex items-start */
+.tw-40 { 
+	@apply flex items-start; 
+}
+/* from text-2xl font-bold text-blue-600 */
+.tw-49 { 
+	@apply text-2xl font-bold text-blue-600; 
+}
+/* from text-blue-600 hover:text-blue-800 font-medium */
+.tw-9 { 
+	@apply text-blue-600 hover:text-blue-800 font-medium; 
+}
+/* from text-gray-600 hover:text-blue-600 transition-colors */
+.tw-60 { 
+	@apply text-gray-600 hover:text-blue-600 transition-colors; 
+}
+/* from border-b border-gray-200 pb-8 */
+.tw-12 { 
+	@apply pb-8 border-b border-gray-200; 
+}
+/* from mt-2 */
+.tw-25 { 
+	@apply mt-2; 
+}
+/* from prose max-w-none */
+.tw-18 { 
+	@apply prose max-w-none; 
+}
+/* from text-3xl font-bold text-gray-900 mb-3 */
+.tw-13 { 
+	@apply text-3xl font-bold text-gray-900 mb-3; 
+}
+/* from font-bold text-xl */
+.tw-23 { 
+	@apply text-xl font-bold; 
+}
+/* from px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm hover:bg-blue-200 transition-colors */
+.tw-38 { 
+	@apply text-sm hover:bg-blue-200 rounded-full px-3 py-1 text-blue-700 transition-colors bg-blue-100; 
+}
+/* from text-2xl font-bold text-gray-900 mb-2 */
+.tw-7 { 
+	@apply font-bold text-gray-900 mb-2 text-2xl; 
+}
+/* from text-center mb-12 */
+.tw-0 { 
+	@apply text-center mb-12; 
+}
+/* from text-gray-600 */
+.tw-58 { 
+	@apply text-gray-600; 
+}
+/* from w-12 h-12 rounded-full bg-blue-500 flex items-center justify-center text-white font-bold */
+.tw-41 { 
+	@apply w-12 rounded-full flex justify-center font-bold h-12 text-white items-center bg-blue-500; 
+}
+/* from bg-gray-100 border-t border-gray-200 py-8 mt-12 */
+.tw-53 { 
+	@apply border-t border-gray-200 py-8 mt-12 bg-gray-100; 
+}
+/* from bg-gray-100 p-4 rounded overflow-x-auto */
+.tw-34 { 
+	@apply overflow-x-auto p-4 bg-gray-100 rounded; 
+}
+/* from max-w-4xl mx-auto */
+.tw-52 { 
+	@apply max-w-4xl mx-auto; 
+}
+/* from mx-2 */
+.tw-16 { 
+	@apply mx-2; 
+}
+/* from text-gray-600 mt-1 */
+.tw-24 { 
+	@apply text-gray-600 mt-1; 
+}
+/* from text-xl font-semibold text-blue-600 */
+.tw-57 { 
+	@apply text-xl font-semibold text-blue-600; 
+}
+/* from bg-blue-600 text-white px-6 py-3 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 transition-colors */
+.tw-30 { 
+	@apply rounded-md focus:outline-none focus:ring-opacity-50 bg-blue-600 py-3 focus:ring-2 focus:ring-blue-500 text-white hover:bg-blue-700 px-6 transition-colors; 
+}
+/* from bg-white rounded-lg shadow-md overflow-hidden */
+.tw-4 { 
+	@apply shadow-md bg-white rounded-lg overflow-hidden; 
+}
+/* from mt-6 text-center text-gray-600 text-sm */
+.tw-61 { 
+	@apply mt-6 text-center text-gray-600 text-sm; 
+}
+/* from text-4xl font-bold text-gray-900 mb-2 */
+.tw-32 { 
+	@apply text-4xl font-bold text-gray-900 mb-2; 
+}
+/* from flex space-x-4 */
+.tw-59 { 
+	@apply flex space-x-4; 
+}
+/* from grid grid-cols-1 md:grid-cols-2 gap-8 */
+.tw-3 { 
+	@apply grid grid-cols-1 md:grid-cols-2 gap-8; 
+}
+/* from text-xl text-gray-600 max-w-2xl mx-auto */
+.tw-2 { 
+	@apply text-gray-600 max-w-2xl mx-auto text-xl; 
+}
+/* from w-full rounded-md border border-gray-300 px-4 py-2 focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:ring-opacity-20 outline-none transition-colors */
+.tw-29 { 
+	@apply w-full px-4 focus:ring-opacity-20 rounded-md border focus:border-blue-500 focus:ring-2 border-gray-300 py-2 outline-none transition-colors focus:ring-blue-500; 
+}
+/* from flex flex-col md:flex-row justify-between items-center */
+.tw-55 { 
+	@apply flex flex-col md:flex-row justify-between items-center; 
+}
+/* from flex space-x-6 */
+.tw-50 { 
+	@apply flex space-x-6; 
+}
+/* from mb-4 md:mb-0 */
+.tw-56 { 
+	@apply mb-4 md:mb-0; 
+}
+/* from p-6 */
+.tw-6 { 
+	@apply p-6; 
+}
+/* from space-y-12 */
+.tw-11 { 
+	@apply space-y-12; 
+}
+/* from flex items-center space-x-2 */
+.tw-47 { 
+	@apply flex items-center space-x-2; 
+}
+/* from flex items-start mt-8 bg-gray-50 p-6 rounded-lg */
+.tw-20 { 
+	@apply flex items-start mt-8 bg-gray-50 p-6 rounded-lg; 
+}
+/* from font-medium */
+.tw-42 { 
+	@apply font-medium; 
+}
+/* from mb-8 */
+.tw-31 { 
+	@apply mb-8; 
+}
+/* from mt-8 bg-gray-50 p-6 rounded-lg */
+.tw-39 { 
+	@apply bg-gray-50 p-6 rounded-lg mt-8; 
+}
+/* from container mx-auto px-4 */
+.tw-54 { 
+	@apply container mx-auto px-4; 
+}
+/* from flex items-center text-gray-600 text-sm */
+.tw-33 { 
+	@apply flex items-center text-gray-600 text-sm; 
+}
+/* from bg-white text-gray-900 flex flex-col min-h-screen */
+.tw-44 { 
+	@apply flex flex-col min-h-screen bg-white text-gray-900; 
+}
+/* from block text-sm font-medium text-gray-700 mb-1 */
+.tw-28 { 
+	@apply text-gray-700 mb-1 block text-sm font-medium; 
+}
+/* from container mx-auto px-4 py-8 flex-grow */
+.tw-51 { 
+	@apply flex-grow container px-4 py-8 mx-auto; 
+}
+/* from w-full h-48 object-cover */
+.tw-5 { 
+	@apply w-full h-48 object-cover; 
+}
+/* from flex flex-wrap gap-2 */
+.tw-37 { 
+	@apply flex flex-wrap gap-2; 
+}
+/* from h-8 w-8 text-blue-600 */
+.tw-48 { 
+	@apply h-8 w-8 text-blue-600; 
+}
+/* from text-gray-600 mb-8 */
+.tw-26 { 
+	@apply text-gray-600 mb-8; 
+}
+/* from text-sm text-gray-600 mt-1 */
+.tw-43 { 
+	@apply text-sm text-gray-600 mt-1; 
+}
+/* from bg-white border-b border-gray-200 */
+.tw-45 { 
+	@apply bg-white border-b border-gray-200; 
+}
+/* from container mx-auto px-4 py-4 flex justify-between items-center */
+.tw-46 { 
+	@apply justify-between items-center container py-4 flex mx-auto px-4; 
+}
+/* from text-gray-700 mb-4 */
+.tw-17 { 
+	@apply text-gray-700 mb-4; 
+}
+/* from w-16 h-16 rounded-full bg-blue-500 flex items-center justify-center text-white font-bold text-xl */
+.tw-22 { 
+	@apply text-white flex text-xl w-16 items-center bg-blue-500 justify-center font-bold h-16 rounded-full; 
+}
+
+/* twerge:end */
+
+@layer base {
+  .prose {
+    @apply text-gray-800 leading-relaxed;
+  }
+  .prose h2 {
+    @apply text-2xl font-bold mt-8 mb-4;
+  }
+  .prose h3 {
+    @apply text-xl font-bold mt-6 mb-3;
+  }
+  .prose p {
+    @apply mb-4;
+  }
+  .prose ul {
+    @apply list-disc pl-6 mb-4;
+  }
+  .prose code {
+    @apply text-sm font-mono bg-gray-100 px-1 py-0.5 rounded;
+  }
+  .prose pre {
+    @apply mb-4;
+  }
+  .prose pre code {
+    @apply block bg-transparent px-0 py-0;
+  }
+}
