@@ -12,7 +12,7 @@ This example demonstrates a modern analytics dashboard UI built with twerge and 
 
 1. Generate the templ components:
 ```sh
-templ generate ./views
+templ generate
 ```
 
 2. Run the code generation:
