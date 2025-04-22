@@ -37,6 +37,8 @@ func main() {
 		"input.css",
 		"classes/classes.html",
 		views.Dashboard(),
+		views.Settings(),
+		views.Report(),
 	); err != nil {
 		panic(err)
 	}
@@ -61,4 +63,3 @@ func runTailwind() {
 		panic(err)
 	}
 }
-

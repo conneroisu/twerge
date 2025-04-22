@@ -36,7 +36,7 @@ func AddRoutes(
 	mux *http.ServeMux,
 ) error {
 	mux.Handle("/{$}", templ.Handler(views.Dashboard()))
-	mux.Handle("/reports/", templ.Handler(views.Reports()))
+	mux.Handle("/reports/", templ.Handler(views.Report()))
 	mux.Handle("/settings/", templ.Handler(views.Settings()))
 	mux.Handle("/dist/", http.FileServer(http.FS(static.Assets)))
 	return nil

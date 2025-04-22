@@ -1,13 +1,166 @@
 package views
 
-templ Reports() {
+import "github.com/conneroisu/twerge"
+
+templ Report() {
 	@Layout("Reports") {
-		<div class="container">
-			<div class="row">
-				<div class="col-12">
-					<h1>Reports</h1>
+		<main class={ twerge.It("container mx-auto px-4 py-6 flex-grow") }>
+			<div class={ twerge.It("mb-6") }>
+				<h2 class={ twerge.It("text-2xl font-bold text-gray-800 mb-4") }>Report Dashboard</h2>
+				<div class={ twerge.It("grid grid-cols-1 md:grid-cols-2 gap-6") }>
+					<div class={ twerge.It("bg-white rounded-lg shadow-md p-6") }>
+						<h3 class={ twerge.It("text-lg font-medium text-gray-800 mb-4") }>Performance Overview</h3>
+						<div class={ twerge.It("flex justify-between items-end mb-4") }>
+							<div>
+								<p class={ twerge.It("text-3xl font-bold text-gray-800") }>78%</p>
+								<p class={ twerge.It("text-sm text-gray-500") }>Overall Score</p>
+							</div>
+							<span class={ twerge.It("text-green-500 flex items-center") }>
+								<svg xmlns="http://www.w3.org/2000/svg" class={ twerge.It("h-5 w-5") } viewBox="0 0 20 20" fill="currentColor">
+									<path fill-rule="evenodd" d="M12 7a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0V8.414l-4.293 4.293a1 1 0 01-1.414 0L8 10.414l-4.293 4.293a1 1 0 01-1.414-1.414l5-5a1 1 0 011.414 0L11 10.586 14.586 7H12z" clip-rule="evenodd"></path>
+								</svg>
+								<span class={ twerge.It("ml-1") }>5.2%</span>
+							</span>
+						</div>
+						<div class={ twerge.It("h-32 bg-gray-100 rounded mb-4") }>
+							// TODO - Add Chart Visualization
+							<div class={ twerge.It("w-full h-full flex items-center justify-center text-gray-400") }>Chart Visualization</div>
+						</div>
+						<div class={ twerge.It("grid grid-cols-3 gap-2 text-center") }>
+							<div>
+								<p class={ twerge.It("text-lg font-semibold text-gray-800") }>92%</p>
+								<p class={ twerge.It("text-xs text-gray-500") }>Uptime</p>
+							</div>
+							<div>
+								<p class={ twerge.It("text-lg font-semibold text-gray-800") }>2.3s</p>
+								<p class={ twerge.It("text-xs text-gray-500") }>Response</p>
+							</div>
+							<div>
+								<p class={ twerge.It("text-lg font-semibold text-gray-800") }>86%</p>
+								<p class={ twerge.It("text-xs text-gray-500") }>Satisfaction</p>
+							</div>
+						</div>
+					</div>
+					<div class={ twerge.It("bg-white rounded-lg shadow-md p-6") }>
+						<h3 class={ twerge.It("text-lg font-medium text-gray-800 mb-4") }>Revenue Trends</h3>
+						<div class={ twerge.It("flex justify-between items-end mb-4") }>
+							<div>
+								<p class={ twerge.It("text-3xl font-bold text-gray-800") }>$12,324</p>
+								<p class={ twerge.It("text-sm text-gray-500") }>Monthly Revenue</p>
+							</div>
+							<span class={ twerge.It("text-green-500 flex items-center") }>
+								<svg xmlns="http://www.w3.org/2000/svg" class={ twerge.It("h-5 w-5") } viewBox="0 0 20 20" fill="currentColor">
+									<path fill-rule="evenodd" d="M12 7a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0V8.414l-4.293 4.293a1 1 0 01-1.414 0L8 10.414l-4.293 4.293a1 1 0 01-1.414-1.414l5-5a1 1 0 011.414 0L11 10.586 14.586 7H12z" clip-rule="evenodd"></path>
+								</svg>
+								<span class={ twerge.It("ml-1") }>8.1%</span>
+							</span>
+						</div>
+						<div class={ twerge.It("h-32 bg-gray-100 rounded mb-4") }>
+							// TODO - Add Chart Visualization
+							<div class={ twerge.It("w-full h-full flex items-center justify-center text-gray-400") }>Chart Visualization</div>
+						</div>
+						<div class={ twerge.It("grid grid-cols-3 gap-2 text-center") }>
+							<div>
+								<p class={ twerge.It("text-lg font-semibold text-gray-800") }>$9.7k</p>
+								<p class={ twerge.It("text-xs text-gray-500") }>Previous</p>
+							</div>
+							<div>
+								<p class={ twerge.It("text-lg font-semibold text-gray-800") }>$42.5k</p>
+								<p class={ twerge.It("text-xs text-gray-500") }>Quarterly</p>
+							</div>
+							<div>
+								<p class={ twerge.It("text-lg font-semibold text-gray-800") }>23%</p>
+								<p class={ twerge.It("text-xs text-gray-500") }>Growth</p>
+							</div>
+						</div>
+					</div>
 				</div>
 			</div>
-		</div>
+			<div class={ twerge.It("mb-6") }>
+				<h2 class={ twerge.It("text-2xl font-bold text-gray-800 mb-4") }>Detailed Reports</h2>
+				<div class={ twerge.It("bg-white rounded-lg shadow-md overflow-hidden") }>
+					<div class={ twerge.It("flex border-b border-gray-200") }>
+						<button class={ twerge.It("px-4 py-3 text-sm font-medium border-b-2 border-indigo-500 text-indigo-600") }>Weekly</button>
+						<button class={ twerge.It("px-4 py-3 text-sm font-medium text-gray-500 hover:text-gray-700") }>Monthly</button>
+						<button class={ twerge.It("px-4 py-3 text-sm font-medium text-gray-500 hover:text-gray-700") }>Quarterly</button>
+						<button class={ twerge.It("px-4 py-3 text-sm font-medium text-gray-500 hover:text-gray-700") }>Yearly</button>
+					</div>
+					<div class={ twerge.It("overflow-x-auto") }>
+						<table class={ twerge.It("min-w-full divide-y divide-gray-200") }>
+							<thead class={ twerge.It("bg-gray-50") }>
+								<tr>
+									<th class={ twerge.It("px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider") }>Report Name</th>
+									<th class={ twerge.It("px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider") }>Metric</th>
+									<th class={ twerge.It("px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider") }>Change</th>
+									<th class={ twerge.It("px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider") }>Status</th>
+									<th class={ twerge.It("px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider") }>Actions</th>
+								</tr>
+							</thead>
+							<tbody class={ twerge.It("bg-white divide-y divide-gray-200") }>
+								<tr>
+									<td class={ twerge.It("px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900") }>User Acquisition</td>
+									<td class={ twerge.It("px-6 py-4 whitespace-nowrap text-sm text-gray-500") }>1,245 new users</td>
+									<td class={ twerge.It("px-6 py-4 whitespace-nowrap text-sm text-green-500") }>+12%</td>
+									<td class={ twerge.It("px-6 py-4 whitespace-nowrap text-sm text-gray-500") }>
+										<span class={ twerge.It("px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800") }>
+											Good
+										</span>
+									</td>
+									<td class={ twerge.It("px-6 py-4 whitespace-nowrap text-right text-sm font-medium") }>
+										<a href="#" class={ twerge.It("text-indigo-600 hover:text-indigo-900") }>View</a>
+									</td>
+								</tr>
+								<tr>
+									<td class={ twerge.It("px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900") }>Conversion Rate</td>
+									<td class={ twerge.It("px-6 py-4 whitespace-nowrap text-sm text-gray-500") }>24.5% rate</td>
+									<td class={ twerge.It("px-6 py-4 whitespace-nowrap text-sm text-green-500") }>+3.2%</td>
+									<td class={ twerge.It("px-6 py-4 whitespace-nowrap text-sm text-gray-500") }>
+										<span class={ twerge.It("px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800") }>
+											Good
+										</span>
+									</td>
+									<td class={ twerge.It("px-6 py-4 whitespace-nowrap text-right text-sm font-medium") }>
+										<a href="#" class={ twerge.It("text-indigo-600 hover:text-indigo-900") }>View</a>
+									</td>
+								</tr>
+								<tr>
+									<td class={ twerge.It("px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900") }>Server Performance</td>
+									<td class={ twerge.It("px-6 py-4 whitespace-nowrap text-sm text-gray-500") }>89% uptime</td>
+									<td class={ twerge.It("px-6 py-4 whitespace-nowrap text-sm text-red-500") }>-2.3%</td>
+									<td class={ twerge.It("px-6 py-4 whitespace-nowrap text-sm text-gray-500") }>
+										<span class={ twerge.It("px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800") }>
+											Warning
+										</span>
+									</td>
+									<td class={ twerge.It("px-6 py-4 whitespace-nowrap text-right text-sm font-medium") }>
+										<a href="#" class={ twerge.It("text-indigo-600 hover:text-indigo-900") }>View</a>
+									</td>
+								</tr>
+								<tr>
+									<td class={ twerge.It("px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900") }>Monthly Revenue</td>
+									<td class={ twerge.It("px-6 py-4 whitespace-nowrap text-sm text-gray-500") }>$45,245</td>
+									<td class={ twerge.It("px-6 py-4 whitespace-nowrap text-sm text-green-500") }>+8.3%</td>
+									<td class={ twerge.It("px-6 py-4 whitespace-nowrap text-sm text-gray-500") }>
+										<span class={ twerge.It("px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800") }>
+											Good
+										</span>
+									</td>
+									<td class={ twerge.It("px-6 py-4 whitespace-nowrap text-right text-sm font-medium") }>
+										<a href="#" class={ twerge.It("text-indigo-600 hover:text-indigo-900") }>View</a>
+									</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+					<div class={ twerge.It("px-6 py-4 bg-gray-50 border-t border-gray-200 flex items-center justify-between") }>
+						<p class={ twerge.It("text-sm text-gray-500") }>Showing 4 of 16 reports</p>
+						<div class={ twerge.It("flex space-x-2") }>
+							<button class={ twerge.It("px-3 py-1 border border-gray-300 rounded text-sm text-gray-700 bg-white hover:bg-gray-50") }>Previous</button>
+							<button class={ twerge.It("px-3 py-1 border border-gray-300 rounded text-sm text-gray-700 bg-white hover:bg-gray-50") }>Next</button>
+						</div>
+					</div>
+				</div>
+			</div>
+		</main>
 	}
 }

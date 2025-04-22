@@ -1,13 +1,99 @@
 package views
 
+import "github.com/conneroisu/twerge"
+
 templ Settings() {
 	@Layout("Settings") {
-		<div class="container">
-			<div class="row">
-				<div class="col-12">
-					<h1>Settings</h1>
+		<main class={ twerge.It("container mx-auto px-4 py-6 flex-grow") }>
+			<div class={ twerge.It("mb-6") }>
+				<h2 class={ twerge.It("text-2xl font-bold text-gray-800 mb-4") }>Account Settings</h2>
+				<div class={ twerge.It("bg-white rounded-lg shadow-md p-6") }>
+					<div class={ twerge.It("mb-6") }>
+						<h3 class={ twerge.It("text-lg font-medium text-gray-800 mb-4") }>Profile Information</h3>
+						<div class={ twerge.It("grid grid-cols-1 md:grid-cols-2 gap-6") }>
+							<div>
+								<label for="name" class={ twerge.It("block text-sm font-medium text-gray-700 mb-1") }>Full Name</label>
+								<input type="text" id="name" value="John Smith" class={ twerge.It("block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500") } />
+							</div>
+							<div>
+								<label for="email" class={ twerge.It("block text-sm font-medium text-gray-700 mb-1") }>Email Address</label>
+								<input type="email" id="email" value="john@example.com" class={ twerge.It("block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500") } />
+							</div>
+							<div>
+								<label for="role" class={ twerge.It("block text-sm font-medium text-gray-700 mb-1") }>Role</label>
+								<select id="role" class={ twerge.It("block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500") }>
+									<option>Administrator</option>
+									<option>Manager</option>
+									<option>User</option>
+								</select>
+							</div>
+							<div>
+								<label for="timezone" class={ twerge.It("block text-sm font-medium text-gray-700 mb-1") }>Timezone</label>
+								<select id="timezone" class={ twerge.It("block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500") }>
+									<option>UTC (GMT+0)</option>
+									<option>Eastern Time (GMT-5)</option>
+									<option>Pacific Time (GMT-8)</option>
+									<option>Central European Time (GMT+1)</option>
+								</select>
+							</div>
+						</div>
+					</div>
+					<div class={ twerge.It("mb-6") }>
+						<h3 class={ twerge.It("text-lg font-medium text-gray-800 mb-4") }>Notification Preferences</h3>
+						<div class={ twerge.It("space-y-4") }>
+							<div class={ twerge.It("flex items-center") }>
+								<input id="email-notifications" type="checkbox" checked class={ twerge.It("h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded") } />
+								<label for="email-notifications" class={ twerge.It("ml-3 text-sm text-gray-700") }>Email Notifications</label>
+							</div>
+							<div class={ twerge.It("flex items-center") }>
+								<input id="browser-notifications" type="checkbox" checked class={ twerge.It("h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded") } />
+								<label for="browser-notifications" class={ twerge.It("ml-3 text-sm text-gray-700") }>Browser Notifications</label>
+							</div>
+							<div class={ twerge.It("flex items-center") }>
+								<input id="weekly-digest" type="checkbox" class={ twerge.It("h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded") } />
+								<label for="weekly-digest" class={ twerge.It("ml-3 text-sm text-gray-700") }>Weekly Digest Summary</label>
+							</div>
+						</div>
+					</div>
+					<div class={ twerge.It("flex justify-end") }>
+						<button type="button" class={ twerge.It("bg-gray-200 text-gray-700 px-4 py-2 rounded-md mr-3 hover:bg-gray-300 transition-colors") }>Cancel</button>
+						<button type="button" class={ twerge.It("bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 transition-colors") }>Save Changes</button>
+					</div>
 				</div>
 			</div>
-		</div>
+			<div class={ twerge.It("mb-6") }>
+				<h2 class={ twerge.It("text-2xl font-bold text-gray-800 mb-4") }>Security</h2>
+				<div class={ twerge.It("bg-white rounded-lg shadow-md p-6") }>
+					<div class={ twerge.It("mb-6") }>
+						<h3 class={ twerge.It("text-lg font-medium text-gray-800 mb-4") }>Change Password</h3>
+						<div class={ twerge.It("grid grid-cols-1 gap-4") }>
+							<div>
+								<label for="current-password" class={ twerge.It("block text-sm font-medium text-gray-700 mb-1") }>Current Password</label>
+								<input type="password" id="current-password" class={ twerge.It("block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500") } />
+							</div>
+							<div>
+								<label for="new-password" class={ twerge.It("block text-sm font-medium text-gray-700 mb-1") }>New Password</label>
+								<input type="password" id="new-password" class={ twerge.It("block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500") } />
+							</div>
+							<div>
+								<label for="confirm-password" class={ twerge.It("block text-sm font-medium text-gray-700 mb-1") }>Confirm New Password</label>
+								<input type="password" id="confirm-password" class={ twerge.It("block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500") } />
+							</div>
+						</div>
+						<div class={ twerge.It("mt-4") }>
+							<button type="button" class={ twerge.It("bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 transition-colors") }>Update Password</button>
+						</div>
+					</div>
+					<div class={ twerge.It("mb-6") }>
+						<h3 class={ twerge.It("text-lg font-medium text-gray-800 mb-4") }>Two-Factor Authentication</h3>
+						<div class={ twerge.It("flex items-center mb-4") }>
+							<span class={ twerge.It("inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800") }>Disabled</span>
+							<button type="button" class={ twerge.It("ml-4 text-sm text-indigo-600 hover:text-indigo-500") }>Enable</button>
+						</div>
+						<p class={ twerge.It("text-sm text-gray-500") }>Add an extra layer of security to your account by requiring both your password and a verification code from your mobile phone.</p>
+					</div>
+				</div>
+			</div>
+		</main>
 	}
 }
