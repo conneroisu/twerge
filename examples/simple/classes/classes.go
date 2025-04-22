@@ -10,11 +10,11 @@ func SetCache() {
 var ClassMapStr = map[string]twerge.CacheValue{
 	"bg-gray-50 text-gray-900 flex flex-col min-h-screen": twerge.CacheValue{
 		Generated: "tw-0",
-		Merged:    "min-h-screen bg-gray-50 text-gray-900 flex flex-col",
+		Merged:    "text-gray-900 flex flex-col min-h-screen bg-gray-50",
 	},
 	"bg-gray-800 text-white py-6": twerge.CacheValue{
 		Generated: "tw-9",
-		Merged:    "bg-gray-800 text-white py-6",
+		Merged:    "py-6 bg-gray-800 text-white",
 	},
 	"bg-indigo-600 text-white shadow-md": twerge.CacheValue{
 		Generated: "tw-1",
@@ -22,11 +22,11 @@ var ClassMapStr = map[string]twerge.CacheValue{
 	},
 	"container mx-auto px-4 py-4 flex justify-between items-center": twerge.CacheValue{
 		Generated: "tw-2",
-		Merged:    "px-4 flex items-center py-4 justify-between container mx-auto",
+		Merged:    "px-4 justify-between items-center mx-auto py-4 flex container",
 	},
 	"container mx-auto px-4 py-6 flex-grow": twerge.CacheValue{
 		Generated: "tw-8",
-		Merged:    "flex-grow container px-4 py-6 mx-auto",
+		Merged:    "flex-grow px-4 py-6 container mx-auto",
 	},
 	"container mx-auto px-4": twerge.CacheValue{
 		Generated: "tw-10",
@@ -62,7 +62,7 @@ var ClassMapStr = map[string]twerge.CacheValue{
 	},
 	"mt-4 text-center text-gray-400 text-sm": twerge.CacheValue{
 		Generated: "tw-17",
-		Merged:    "text-sm mt-4 text-center text-gray-400",
+		Merged:    "mt-4 text-center text-gray-400 text-sm",
 	},
 	"text-2xl font-bold": twerge.CacheValue{
 		Generated: "tw-5",
@@ -70,7 +70,7 @@ var ClassMapStr = map[string]twerge.CacheValue{
 	},
 	"text-gray-400 hover:text-white transition-colors": twerge.CacheValue{
 		Generated: "tw-16",
-		Merged:    "text-gray-400 hover:text-white transition-colors",
+		Merged:    "transition-colors text-gray-400 hover:text-white",
 	},
 	"text-gray-400": twerge.CacheValue{
 		Generated: "tw-14",
@@ -78,6 +78,6 @@ var ClassMapStr = map[string]twerge.CacheValue{
 	},
 	"text-xl font-semibold": twerge.CacheValue{
 		Generated: "tw-13",
-		Merged:    "font-semibold text-xl",
+		Merged:    "text-xl font-semibold",
 	},
 }
