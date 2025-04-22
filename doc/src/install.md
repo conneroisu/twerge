@@ -1,6 +1,6 @@
 # Installation
 
-## Using Go (recommended)
+## Using Go
 
 ```bash
 go get github.com/conneroisu/twerge
@@ -15,7 +15,7 @@ git clone https://github.com/conneroisu/twerge.git
 cd twerge
 ```
 
-## Nix Integration
+## Nix Integration (Development Environment)
 
 Twerge comes with Nix support for a reproducible development environment:
 

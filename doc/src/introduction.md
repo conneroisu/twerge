@@ -9,7 +9,6 @@ Twerge is a comprehensive Go library that performs four key functions for Tailwi
 1. **Intelligent Class Merging** - Resolves conflicts between Tailwind CSS classes according to their specificity rules
 2. **Class Name Generation** - Creates short, unique CSS class names based on hashes of the merged classes
 3. **Class Mapping Management** - Maintains mappings between original class strings and generated class names, with code generation capabilities
-4. **Runtime Static Hashmap** - Provides a fast runtime lookup for direct class name resolution without a generation step
 
 ## Why Use Twerge?
 
@@ -39,7 +38,6 @@ Twerge is particularly well-suited for:
 - Projects using the [templ](https://github.com/a-h/templ) templating language
 - Applications requiring build-time CSS optimization
 - Static site generators with Tailwind CSS integration
-- Dynamic web applications needing runtime class management
 
 ## Next Steps
 
