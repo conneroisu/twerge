@@ -1,0 +1,41 @@
+package views
+
+import "github.com/conneroisu/twerge"
+
+templ Layout(title string) {
+	<!DOCTYPE html>
+	<html lang="en">
+		<head>
+			<meta charset="UTF-8"/>
+			<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+			<title>Dashboard Example</title>
+			<link rel="stylesheet" href="/dist/styles.css"/>
+			<title>{ title }</title>
+		</head>
+		<body class={ twerge.It("bg-gray-100 text-gray-900 flex flex-col min-h-screen") }>
+			<header class={ twerge.It("bg-indigo-700 text-white shadow-lg") }>
+				<div class={ twerge.It("container mx-auto px-4 py-3 flex justify-between items-center") }>
+					<div class={ twerge.It("flex items-center space-x-2") }>
+						<svg xmlns="http://www.w3.org/2000/svg" class={ twerge.It("h-8 w-8") } fill="none" viewBox="0 0 24 24" stroke="currentColor">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+						</svg>
+						<h1 class={ twerge.It("text-xl font-bold") }>Analytics Dashboard</h1>
+					</div>
+					<nav>
+						<ul class={ twerge.It("flex space-x-6") }>
+							<li><a href="/" class={ twerge.It("hover:text-indigo-200 transition-colors") }>Dashboard</a></li>
+							<li><a href="/reports" class={ twerge.It("hover:text-indigo-200 transition-colors") }>Reports</a></li>
+							<li><a href="/settings" class={ twerge.It("hover:text-indigo-200 transition-colors") }>Settings</a></li>
+						</ul>
+					</nav>
+				</div>
+			</header>
+			{ children... }
+			<footer class={ twerge.It("bg-gray-800 text-white py-4") }>
+				<div class={ twerge.It("container mx-auto px-4 text-center text-sm") }>
+					&copy; 2025 Dashboard Example. Built with <a href="https://github.com/conneroisu/twerge" class={ twerge.It("text-indigo-300 hover:text-indigo-100") }>twerge</a>.
+				</div>
+			</footer>
+		</body>
+	</html>
+}

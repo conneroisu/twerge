@@ -1,333 +1,284 @@
 # Web Server Integration
 
-This example demonstrates how to integrate Twerge with a web server in Go, showing how to use it with HTML templates and dynamic content.
+This page demonstrates how to integrate Twerge with a Go web server for delivering optimized Tailwind CSS in a production environment.
 
-## Basic Web Server Example
+## HTTP Server Example
 
-This example uses the standard `net/http` package and shows how to integrate Twerge for class management:
+The example below shows how to set up a simple HTTP server that serves a web application with Twerge-optimized Tailwind CSS classes.
 
-```go
+### Server Setup
+
+```go title="main.go"
 package main
 
 import (
-    "fmt"
-    "github.com/conneroisu/twerge"
-    "html/template"
-    "net/http"
+	"fmt"
+	"log"
+	"net/http"
+	"os"
+	"path/filepath"
+	"time"
+
+	"github.com/conneroisu/twerge/examples/simple/views"
 )
 
-// Template data structure
-type PageData struct {
-    Title string
-    Content string
-    IsDarkMode bool
+func main() {
+	// Serve static files
+	fs := http.FileServer(http.Dir("_static"))
+	http.Handle("/dist/", http.StripPrefix("/dist/", fs))
+	
+	// Index route
+	http.HandleFunc("/", handleIndex)
+	
+	// Start server
+	port := getEnv("PORT", "8080")
+	log.Printf("Server starting on http://localhost:%s", port)
+	if err := http.ListenAndServe(":"+port, nil); err != nil {
+		log.Fatal(err)
+	}
 }
 
-// HTML template with Twerge classes
-const htmlTemplate = `
-<!DOCTYPE html>
-<html>
-<head>
-    <title>{{.Title}}</title>
-    <style>
-        {{.CSS}}
-    </style>
-</head>
-<body class="{{.BodyClass}}">
-    <header class="{{.HeaderClass}}">
-        <h1 class="{{.TitleClass}}">{{.Title}}</h1>
-    </header>
-    <main class="{{.ContentClass}}">
-        <p>{{.Content}}</p>
-    </main>
-    <footer class="{{.FooterClass}}">
-        &copy; 2023 Twerge Example
-    </footer>
-</body>
-</html>
-`
+func handleIndex(w http.ResponseWriter, r *http.Request) {
+	// If not at the root path, return 404
+	if r.URL.Path != "/" {
+		http.NotFound(w, r)
+		return
+	}
+	
+	// Render the template
+	err := views.View().Render(r.Context(), w)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+}
 
-func main() {
-    // Initialize Twerge with common classes
-    twerge.InitWithCommonClasses()
-
-    // Register custom component classes
-    twerge.RegisterClasses(map[string]string{
-        "bg-white dark:bg-gray-800 min-h-screen": "tw-body",
-        "flex justify-between items-center p-4 border-b": "tw-header",
-        "text-2xl font-bold text-gray-800 dark:text-white": "tw-title",
-        "p-6 max-w-4xl mx-auto": "tw-content",
-        "mt-8 p-4 text-center text-gray-600 dark:text-gray-400 text-sm": "tw-footer",
-    })
-
-    // Define HTTP handler
-    http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-        // Determine if dark mode from query param
-        isDarkMode := r.URL.Query().Get("darkMode") == "true"
-
-        // Prepare template data
-        data := PageData{
-            Title: "Twerge Web Server Example",
-            Content: "This example demonstrates how to use Twerge in a web server.",
-            IsDarkMode: isDarkMode,
-        }
-
-        // Prepare template with Twerge-generated classes
-        tmplData := struct {
-            PageData
-            CSS        template.HTML
-            BodyClass  string
-            HeaderClass string
-            TitleClass  string
-            ContentClass string
-            FooterClass string
-        }{
-            PageData: data,
-            CSS:        template.HTML(twerge.GetRuntimeClassHTML()),
-            BodyClass:  twerge.RuntimeGenerate("bg-white dark:bg-gray-800 min-h-screen"),
-            HeaderClass: twerge.RuntimeGenerate("flex justify-between items-center p-4 border-b"),
-            TitleClass:  twerge.RuntimeGenerate("text-2xl font-bold text-gray-800 dark:text-white"),
-            ContentClass: twerge.RuntimeGenerate("p-6 max-w-4xl mx-auto"),
-            FooterClass: twerge.RuntimeGenerate("mt-8 p-4 text-center text-gray-600 dark:text-gray-400 text-sm"),
-        }
-
-        // Parse and execute template
-        tmpl, err := template.New("page").Parse(htmlTemplate)
-        if err != nil {
-            http.Error(w, err.Error(), http.StatusInternalServerError)
-            return
-        }
-
-        err = tmpl.Execute(w, tmplData)
-        if err != nil {
-            http.Error(w, err.Error(), http.StatusInternalServerError)
-            return
-        }
-    })
-
-    // Start server
-    fmt.Println("Server starting at http://localhost:8080")
-    http.ListenAndServe(":8080", nil)
+// Helper to get environment variable with default
+func getEnv(key, fallback string) string {
+	if value, ok := os.LookupEnv(key); ok {
+		return value
+	}
+	return fallback
 }
 ```
 
-## Integration with Templ
+### Middleware for Cache Control
 
-This example shows how to integrate Twerge with the [templ](https://github.com/a-h/templ) templating language:
+For production, you might want to add cache control headers for better performance:
 
-```go
-// File: view.templ
+```go title="middleware.go"
 package main
+
+import (
+	"net/http"
+	"strings"
+	"time"
+)
+
+// CacheControlMiddleware adds cache control headers for static assets
+func CacheControlMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		// Set cache headers for static assets
+		if strings.HasPrefix(r.URL.Path, "/dist/") {
+			w.Header().Set("Cache-Control", "public, max-age=31536000") // 1 year
+			w.Header().Set("Expires", time.Now().Add(time.Hour*24*365).Format(time.RFC1123))
+		}
+		next.ServeHTTP(w, r)
+	})
+}
+
+// Usage example
+func setupServer() {
+	staticHandler := http.FileServer(http.Dir("_static"))
+	http.Handle("/dist/", CacheControlMiddleware(http.StripPrefix("/dist/", staticHandler)))
+}
+```
+
+## Template Composition
+
+When building larger applications, you'll want to compose templates. Here's how to use Twerge with template composition:
+
+```go title="layout.templ"
+package views
 
 import "github.com/conneroisu/twerge"
 
-// Layout component
 templ Layout(title string) {
-    <!DOCTYPE html>
-    <html>
-        <head>
-            <title>{ title }</title>
-            <style>
-                { twerge.GetRuntimeClassHTML() }
-            </style>
-        </head>
-        <body class={ twerge.RuntimeGenerate("bg-white dark:bg-gray-800 min-h-screen") }>
-            { children... }
-        </body>
-    </html>
+	<!DOCTYPE html>
+	<html lang="en">
+		<head>
+			<meta charset="UTF-8"/>
+			<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+			<title>{ title }</title>
+			<link rel="stylesheet" href="/dist/styles.css"/>
+		</head>
+		<body class={ twerge.It("bg-gray-50 text-gray-900 flex flex-col min-h-screen") }>
+			<header class={ twerge.It("bg-indigo-600 text-white shadow-md") }>
+				<!-- Header content -->
+			</header>
+			
+			<!-- Slot for page content -->
+			{ children... }
+			
+			<footer class={ twerge.It("bg-gray-800 text-white py-6") }>
+				<!-- Footer content -->
+			</footer>
+		</body>
+	</html>
 }
 
-// Header component
-templ Header(title string) {
-    <header class={ twerge.RuntimeGenerate("flex justify-between items-center p-4 border-b") }>
-        <h1 class={ twerge.RuntimeGenerate("text-2xl font-bold text-gray-800 dark:text-white") }>{ title }</h1>
-        <nav class={ twerge.RuntimeGenerate("flex gap-4") }>
-            <a href="/" class={ twerge.RuntimeGenerate("text-blue-600 hover:text-blue-800 dark:text-blue-400") }>Home</a>
-            <a href="/about" class={ twerge.RuntimeGenerate("text-blue-600 hover:text-blue-800 dark:text-blue-400") }>About</a>
-        </nav>
-    </header>
-}
-
-// Content component
-templ Content() {
-    <main class={ twerge.RuntimeGenerate("p-6 max-w-4xl mx-auto") }>
-        { children... }
-    </main>
-}
-
-// Footer component
-templ Footer() {
-    <footer class={ twerge.RuntimeGenerate("mt-8 p-4 text-center text-gray-600 dark:text-gray-400 text-sm") }>
-        &copy; 2023 Twerge Example
-    </footer>
-}
-
-// Home page
-templ HomePage() {
-    @Layout("Twerge + Templ Example") {
-        @Header("Twerge + Templ Example")
-        @Content() {
-            <div class={ twerge.RuntimeGenerate("prose dark:prose-invert") }>
-                <p>This example demonstrates how to use Twerge with the Templ templating language.</p>
-                <p>The classes are dynamically generated and the CSS is included in the page.</p>
-            </div>
-        }
-        @Footer()
-    }
+// Usage in page templates
+templ AboutPage() {
+	@Layout("About Us") {
+		<main class={ twerge.It("container mx-auto px-4 py-6 flex-grow") }>
+			<h1 class={ twerge.It("text-3xl font-bold mb-6") }>About Us</h1>
+			<p class={ twerge.It("text-gray-700") }>Content goes here...</p>
+		</main>
+	}
 }
 ```
 
-```go
-// File: main.go
+## API Routes with JSON
+
+If you're building an API that serves both HTML and JSON, you can structure your handlers like this:
+
+```go title="api_handler.go"
 package main
 
 import (
-    "fmt"
-    "github.com/conneroisu/twerge"
-    "net/http"
+	"encoding/json"
+	"net/http"
+	
+	"github.com/conneroisu/twerge/examples/simple/views"
 )
 
-func main() {
-    // Initialize Twerge
-    twerge.InitWithCommonClasses()
+// Struct for JSON response
+type ApiResponse struct {
+	Status  string      `json:"status"`
+	Message string      `json:"message"`
+	Data    interface{} `json:"data,omitempty"`
+}
 
-    // Register routes
-    http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-        // Render the home page
-        component := HomePage()
-        component.Render(r.Context(), w)
-    })
-
-    // Start server
-    fmt.Println("Server starting at http://localhost:8080")
-    http.ListenAndServe(":8080", nil)
+// Handler that can respond with HTML or JSON
+func handleData(w http.ResponseWriter, r *http.Request) {
+	data := map[string]interface{}{
+		"name": "Twerge Example",
+		"description": "A demonstration of Twerge with web servers",
+	}
+	
+	// Check Accept header for JSON request
+	if r.Header.Get("Accept") == "application/json" {
+		w.Header().Set("Content-Type", "application/json")
+		response := ApiResponse{
+			Status: "success",
+			Data: data,
+		}
+		json.NewEncoder(w).Encode(response)
+		return
+	}
+	
+	// Otherwise render HTML
+	err := views.DataView(data).Render(r.Context(), w)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
 }
 ```
 
-## Advanced Example: API with Dynamic Classes
+## Performance Considerations
 
-This example shows how to use Twerge in an API that dynamically generates classes based on data:
+When using Twerge with a web server, consider these performance optimizations:
 
-```go
+1. **Precompiled Templates**: Generate all templ components at build time
+2. **Static File Serving**: Use proper cache headers for static assets
+3. **Compression**: Enable gzip/brotli compression for CSS and HTML
+4. **CDN Integration**: Consider serving static assets from a CDN
+
+```go title="compression.go"
 package main
 
 import (
-    "encoding/json"
-    "fmt"
-    "github.com/conneroisu/twerge"
-    "net/http"
+	"net/http"
+	"strings"
+	
+	"github.com/NYTimes/gziphandler"
 )
 
-// Component data
-type Component struct {
-    ID          string `json:"id"`
-    Type        string `json:"type"`
-    Label       string `json:"label"`
-    Description string `json:"description"`
-    Color       string `json:"color"`
-    Size        string `json:"size"`
-}
-
-// Generate component classes based on data
-func generateComponentClasses(c Component) map[string]string {
-    // Base classes for different component types
-    baseClasses := map[string]string{
-        "button": "inline-flex items-center justify-center rounded font-medium focus:outline-none focus:ring-2 focus:ring-offset-2",
-        "card":   "rounded overflow-hidden shadow",
-        "badge":  "inline-flex items-center rounded-full text-xs font-medium",
-        "alert":  "p-4 rounded",
-    }
-
-    // Color classes
-    colorClasses := map[string]string{
-        "blue":  "bg-blue-500 text-white hover:bg-blue-600 focus:ring-blue-500",
-        "green": "bg-green-500 text-white hover:bg-green-600 focus:ring-green-500",
-        "red":   "bg-red-500 text-white hover:bg-red-600 focus:ring-red-500",
-        "gray":  "bg-gray-200 text-gray-800 hover:bg-gray-300 focus:ring-gray-500",
-    }
-
-    // Size classes
-    sizeClasses := map[string]string{
-        "sm": "px-2.5 py-1.5 text-xs",
-        "md": "px-4 py-2 text-sm",
-        "lg": "px-6 py-3 text-base",
-    }
-
-    // Get base classes for the component type
-    classes := baseClasses[c.Type]
-    if classes == "" {
-        classes = baseClasses["button"] // Default to button
-    }
-
-    // Add color classes
-    if color := colorClasses[c.Color]; color != "" {
-        classes += " " + color
-    }
-
-    // Add size classes
-    if size := sizeClasses[c.Size]; size != "" {
-        classes += " " + size
-    }
-
-    // Generate a short class name
-    shortClassName := twerge.RuntimeGenerate(classes)
-
-    return map[string]string{
-        "classes": classes,
-        "className": shortClassName,
-    }
-}
-
-func main() {
-    // Initialize Twerge
-    twerge.InitWithCommonClasses()
-
-    // API routes
-    http.HandleFunc("/api/components", func(w http.ResponseWriter, r *http.Request) {
-        // Example components
-        components := []Component{
-            {ID: "btn1", Type: "button", Label: "Save", Color: "blue", Size: "md"},
-            {ID: "btn2", Type: "button", Label: "Cancel", Color: "gray", Size: "md"},
-            {ID: "card1", Type: "card", Label: "User Profile", Color: "blue", Size: "lg"},
-            {ID: "badge1", Type: "badge", Label: "New", Color: "red", Size: "sm"},
-        }
-
-        // Process each component
-        result := make([]map[string]interface{}, 0, len(components))
-        for _, comp := range components {
-            classes := generateComponentClasses(comp)
-
-            // Create response object
-            compResponse := map[string]interface{}{
-                "id":          comp.ID,
-                "type":        comp.Type,
-                "label":       comp.Label,
-                "description": comp.Description,
-                "classes":     classes["classes"],
-                "className":   classes["className"],
-            }
-
-            result = append(result, compResponse)
-        }
-
-        // Add CSS to the response
-        css := twerge.GetRuntimeClassHTML()
-
-        // Create final response
-        response := map[string]interface{}{
-            "components": result,
-            "css":        css,
-        }
-
-        // Return JSON response
-        w.Header().Set("Content-Type", "application/json")
-        json.NewEncoder(w).Encode(response)
-    })
-
-    // Start server
-    fmt.Println("API server starting at http://localhost:8080")
-    http.ListenAndServe(":8080", nil)
+func setupCompression() {
+	// Apply gzip compression to static assets
+	staticHandler := http.FileServer(http.Dir("_static"))
+	compressedHandler := gziphandler.GzipHandler(http.StripPrefix("/dist/", staticHandler))
+	http.Handle("/dist/", compressedHandler)
 }
 ```
 
-See the [web-server example](https://github.com/conneroisu/twerge/tree/main/examples/web-server) in the GitHub repository for a complete working example.
+## Example Server with All Features
+
+Here's a complete example integrating all the features mentioned above:
+
+```go title="main.go"
+package main
+
+import (
+	"context"
+	"log"
+	"net/http"
+	"os"
+	"os/signal"
+	"syscall"
+	"time"
+	
+	"github.com/NYTimes/gziphandler"
+	"github.com/conneroisu/twerge/examples/simple/views"
+)
+
+func main() {
+	// Create router
+	mux := http.NewServeMux()
+	
+	// Static files with compression and caching
+	staticHandler := http.FileServer(http.Dir("_static"))
+	compressedHandler := gziphandler.GzipHandler(http.StripPrefix("/dist/", staticHandler))
+	cachedHandler := CacheControlMiddleware(compressedHandler)
+	mux.Handle("/dist/", cachedHandler)
+	
+	// Routes
+	mux.HandleFunc("/", handleIndex)
+	mux.HandleFunc("/api/data", handleData)
+	
+	// Configure server
+	server := &http.Server{
+		Addr:         ":" + getEnv("PORT", "8080"),
+		Handler:      mux,
+		ReadTimeout:  5 * time.Second,
+		WriteTimeout: 10 * time.Second,
+		IdleTimeout:  120 * time.Second,
+	}
+	
+	// Start server in a goroutine
+	go func() {
+		log.Printf("Server starting on http://localhost%s", server.Addr)
+		if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+			log.Fatalf("Server error: %v", err)
+		}
+	}()
+	
+	// Graceful shutdown
+	quit := make(chan os.Signal, 1)
+	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
+	<-quit
+	
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	
+	log.Println("Shutting down server...")
+	if err := server.Shutdown(ctx); err != nil {
+		log.Fatalf("Server forced to shutdown: %v", err)
+	}
+	
+	log.Println("Server gracefully stopped")
+}
+```
+
+This comprehensive example demonstrates how to integrate Twerge with a production-ready web server, complete with compression, caching, and graceful shutdown.

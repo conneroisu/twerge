@@ -2,230 +2,180 @@
 
 This page provides basic examples of how to use Twerge in your Go applications.
 
-## Class Merging Example
+## Simple Website Example
 
-```go
+The "simple" example demonstrates a basic website layout with header, main content, and footer sections. It shows how to use Twerge to optimize Tailwind CSS classes in a Go templ application.
+
+### Project Structure
+
+```
+simple/
+├── _static/
+│   └── dist/           # Directory for compiled CSS
+├── classes/
+│   ├── classes.go      # Generated Go code with class mappings
+│   └── classes.html    # HTML output of class definitions 
+├── gen.go              # Code generation script
+├── go.mod              # Go module file
+├── input.css           # TailwindCSS input file
+├── main.go             # Web server
+├── tailwind.config.js  # TailwindCSS configuration
+└── views/
+    ├── view.templ      # Templ template file
+    └── view_templ.go   # Generated Go code from templ
+```
+
+### Code Generation
+
+The `gen.go` file handles Twerge code generation and TailwindCSS processing:
+
+```go title="gen.go"
+//go:build ignore
+// +build ignore
+
 package main
 
 import (
-    "fmt"
-    "github.com/conneroisu/twerge"
+	"flag"
+	"fmt"
+	"os"
+	"os/exec"
+	"time"
+
+	"github.com/conneroisu/twerge"
+	"github.com/conneroisu/twerge/examples/simple/views"
 )
 
+var cwd = flag.String("cwd", "", "current working directory")
+
 func main() {
-    // Merge conflicting Tailwind classes
-    classes := "text-red-500 bg-blue-300 text-xl"
-    mergedClasses := twerge.Merge(classes)
+	start := time.Now()
+	defer func() {
+		elapsed := time.Since(start)
+		fmt.Printf("(update-css) Done in %s.\n", elapsed)
+	}()
+	flag.Parse()
+	if *cwd != "" {
+		err := os.Chdir(*cwd)
+		if err != nil {
+			panic(err)
+		}
+	}
+	fmt.Println("Updating Generated Code...")
+	start = time.Now()
+	if err := twerge.CodeGen(
+		twerge.Default(),
+		"classes/classes.go",
+		"input.css",
+		"classes/classes.html",
+		views.View(),
+	); err != nil {
+		panic(err)
+	}
+	fmt.Println("Done Generating Code. (took", time.Since(start), ")")
 
-    fmt.Println("Original:", classes)
-    fmt.Println("Merged:", mergedClasses)
+	fmt.Println("Running Tailwind...")
+	start = time.Now()
+	runTailwind()
+	fmt.Println("Done Running Tailwind. (took", time.Since(start), ")")
+}
 
-    // Conflict resolution
-    classes = "p-4 m-2 p-8"
-    mergedClasses = twerge.Merge(classes)
-
-    fmt.Println("\nOriginal:", classes)
-    fmt.Println("Merged:", mergedClasses) // p-8 should win
+func runTailwind() {
+	start := time.Now()
+	defer func() {
+		elapsed := time.Since(start)
+		fmt.Printf("(tailwind) Done in %s.\n", elapsed)
+	}()
+	cmd := exec.Command("tailwindcss", "-i", "input.css", "-o", "_static/dist/styles.css")
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	if err := cmd.Run(); err != nil {
+		panic(err)
+	}
 }
 ```
 
-Output:
+### Template Usage
 
+The `view.templ` file shows how to use Twerge in a templ template:
+
+```go title="views/view.templ (excerpt)"
+package views
+
+import "github.com/conneroisu/twerge"
+
+templ View() {
+	<!DOCTYPE html>
+	<html lang="en">
+		<head>
+			<meta charset="UTF-8"/>
+			<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+			<title>stellar</title>
+			<link rel="stylesheet" href="/dist/styles.css"/>
+		</head>
+		<body class={ twerge.It("bg-gray-50 text-gray-900 flex flex-col min-h-screen") }>
+			<header class={ twerge.It("bg-indigo-600 text-white shadow-md") }>
+				<!-- Header content -->
+			</header>
+			<main class={ twerge.It("container mx-auto px-4 py-6 flex-grow") }>
+				<!-- Page content -->
+			</main>
+			<footer class={ twerge.It("bg-gray-800 text-white py-6") }>
+				<!-- Footer content -->
+			</footer>
+		</body>
+	</html>
+}
 ```
-Original: text-red-500 bg-blue-300 text-xl
-Merged: bg-blue-300 text-xl text-red-500
 
-Original: p-4 m-2 p-8
-Merged: m-2 p-8
+### Benefits Demonstrated
+
+- **Class Optimization** - Long Tailwind class strings are converted to short, efficient class names
+- **Build Integration** - Twerge integrates with the build process to generate optimized CSS
+- **Maintainability** - Templates remain readable with full Tailwind class names
+- **Performance** - Final HTML output uses short class names for improved performance
+
+### Running the Example
+
+1. Navigate to the example directory:
+```sh
+cd examples/simple
 ```
 
-## Class Generation Example
+2. Generate the templ components:
+```sh
+templ generate ./views
+```
+
+3. Run the code generation:
+```sh
+go run gen.go
+```
+
+4. Run the server:
+```sh
+go run main.go
+```
+
+5. Open your browser and navigate to http://localhost:8080
+
+## Multiple Component Example
+
+For applications with multiple components, you can pass all components to the `CodeGen` function:
 
 ```go
-package main
-
-import (
-    "fmt"
-    "github.com/conneroisu/twerge"
-)
-
-func main() {
-    // Generate short class names
-    classes := "flex items-center justify-between p-4 bg-white"
-    shortName := twerge.It(classes)
-
-    fmt.Println("Original:", classes)
-    fmt.Println("Generated:", shortName)
-
-    // Get the mapping
-    mapping := twerge.GetMapping()
-    fmt.Println("\nClass Mapping:")
-    for original, generated := range mapping {
-        fmt.Printf("%s => %s\n", original, generated)
-    }
+if err := twerge.CodeGen(
+	twerge.Default(),
+	"classes/classes.go",
+	"input.css", 
+	"classes/classes.html",
+	views.Header(),
+	views.Footer(),
+	views.Sidebar(),
+	views.Content(),
+); err != nil {
+	panic(err)
 }
 ```
 
-Output:
-
-```
-Original: flex items-center justify-between p-4 bg-white
-Generated: tw-a1b2c3d4
-
-Class Mapping:
-flex items-center justify-between p-4 bg-white => tw-a1b2c3d4
-```
-
-## Runtime Mapping Example
-
-```go
-package main
-
-import (
-    "fmt"
-    "github.com/conneroisu/twerge"
-)
-
-func main() {
-    // Register custom classes
-    customClasses := map[string]string{
-        "flex items-center justify-between": "tw-header",
-        "text-sm font-medium text-gray-500": "tw-label",
-    }
-    twerge.RegisterClasses(customClasses)
-
-    // Use the registered classes
-    class1 := twerge.RuntimeGenerate("flex items-center justify-between")
-    class2 := twerge.RuntimeGenerate("text-sm font-medium text-gray-500")
-    class3 := twerge.RuntimeGenerate("p-4 bg-white") // Not pre-registered
-
-    fmt.Println("Custom Header:", class1)
-    fmt.Println("Custom Label:", class2)
-    fmt.Println("Generated:", class3)
-
-    // Get runtime HTML/CSS
-    html := twerge.GetRuntimeClassHTML()
-    fmt.Println("\nGenerated HTML/CSS:")
-    fmt.Println(html)
-}
-```
-
-Output:
-
-```
-Custom Header: tw-header
-Custom Label: tw-label
-Generated: tw-e5f6g7h8
-
-Generated HTML/CSS:
-<style>
-.tw-header { display: flex; align-items: center; justify-content: space-between; }
-.tw-label { font-size: 0.875rem; font-weight: 500; color: #6b7280; }
-.tw-e5f6g7h8 { padding: 1rem; background-color: #ffffff; }
-</style>
-```
-
-## CSS Export Example
-
-```go
-package main
-
-import (
-    "fmt"
-    "github.com/conneroisu/twerge"
-    "os"
-)
-
-func main() {
-    // Generate some classes
-    twerge.It("flex items-center p-4")
-    twerge.It("text-xl font-bold text-gray-800")
-    twerge.It("bg-blue-500 text-white rounded")
-
-    // Export to CSS file
-    err := twerge.ExportCSS("styles.css")
-    if err != nil {
-        fmt.Println("Error:", err)
-        os.Exit(1)
-    }
-
-    fmt.Println("CSS file exported successfully to styles.css")
-
-    // Generate Tailwind input
-    err = twerge.GenerateInputCSSForTailwind("tailwind-input.css", "tailwind-output.css")
-    if err != nil {
-        fmt.Println("Error:", err)
-        os.Exit(1)
-    }
-
-    fmt.Println("Tailwind input file generated successfully")
-}
-```
-
-## Code Generation Example
-
-```go
-package main
-
-import (
-    "fmt"
-    "github.com/conneroisu/twerge"
-    "os"
-)
-
-func main() {
-    // Generate some classes
-    twerge.It("flex items-center p-4")
-    twerge.It("text-xl font-bold text-gray-800")
-    twerge.It("bg-blue-500 text-white rounded")
-
-    // Generate Go code
-    code := twerge.GenerateClassMapCode()
-    fmt.Println("Generated Code Preview:")
-    fmt.Println("--------------------")
-    fmt.Println(code)
-    fmt.Println("--------------------")
-
-    // Write to file
-    err := twerge.WriteClassMapFile("tailwind_classes_gen.go")
-    if err != nil {
-        fmt.Println("Error:", err)
-        os.Exit(1)
-    }
-
-    fmt.Println("Go code written to tailwind_classes_gen.go")
-}
-```
-
-## Configuration Example
-
-```go
-package main
-
-import (
-    "fmt"
-    "github.com/conneroisu/twerge"
-)
-
-func main() {
-    // Configure cache
-    twerge.ConfigureCache(1000)
-    fmt.Println("Cache configured with size 1000")
-
-    // Set class prefix
-    twerge.SetClassPrefix("app-")
-    fmt.Println("Class prefix set to 'app-'")
-
-    // Generate a class with the new prefix
-    className := twerge.It("flex items-center p-4")
-    fmt.Println("Generated class name:", className) // Should start with "app-"
-
-    // Disable cache
-    twerge.DisableCache()
-    fmt.Println("Cache disabled")
-
-    // Check if cache is enabled
-    isEnabled := twerge.IsCacheEnabled()
-    fmt.Println("Is cache enabled?", isEnabled) // Should be false
-}
-```
+This ensures all components' Tailwind classes are included in the optimization process.
