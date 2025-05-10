@@ -25,7 +25,11 @@ func NewDebugHandler() *DebugHandler {
 func (d *DebugHandler) It(s string) string { return s }
 
 // Cache returns the cache of the [Generator].
-func (d *DebugHandler) Cache() map[string]CacheValue { return d.cache }
+func (d *DebugHandler) Cache() map[string]CacheValue {
+	d.mu.RLock()
+	defer d.mu.RUnlock()
+	return d.cache
+}
 
 // SetCache sets the cache of the [Generator].
 func (d *DebugHandler) SetCache(newC map[string]CacheValue) {
