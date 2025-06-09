@@ -1,25 +1,232 @@
-# Introduction
-Twerge is a golang library for merging tailwindcss classes and synthesizing new class names in [templ](https://templ.guide/).
-Example:
+# Twerge
+
+Twerge is a Go library that optimizes TailwindCSS usage in Go templ applications by intelligently merging Tailwind classes and generating short, unique class names for improved runtime performance.
+
+## What It Does
+
+Twerge performs four key functions:
+1. **Intelligent Class Merging**: Resolves conflicts between competing TailwindCSS classes according to Tailwind's precedence rules
+2. **Short Class Generation**: Creates optimized class names (e.g., "tw-1", "tw-2") from merged classes  
+3. **Static Code Generation**: Generates CSS, Go, and HTML files for production builds
+4. **Runtime Performance**: Provides fast lookups using pre-generated static maps
+
+## Core API
+
+### Basic Functions
+```go
+// Main function - converts TailwindCSS classes to optimized class names
+twerge.It("bg-blue-500 text-white hover:bg-blue-600")
+
+// Conditional class application
+twerge.If(isActive, "bg-green-500", "bg-gray-500")
+```
+
+### Class Merging Examples
+```go
+// Conflict resolution - later class wins
+twerge.It("text-red-500 text-blue-500") // → "text-blue-500"
+
+// Specific overrides general
+twerge.It("px-4 pl-2") // → "px-4 pl-2" (both preserved)
+
+// Modifier preservation  
+twerge.It("hover:bg-red-500 focus:bg-blue-500") // → both preserved
+```
+
+## Usage in Templ Files
 
 ```templ
 package views
 
-import (
-	"github.com/conneroisu/twerge"
-)	
+import "github.com/conneroisu/twerge"
 
-templ Home() {
-	<div class={ twerge.It("flex flex-col items-center justify-center h-screen bg-gray-100") }>
-		<div class={ twerge.It("text-center text-2xl font-bold text-gray-800") }>
-			<h1>Welcome to Twerge</h1>
-		</div>
-		<div class={ twerge.It("text-center text-lg text-gray-600") }>
-			<p>This is a demo of the Twerge library</p>
-		</div>
-	</div>
+templ Button(primary bool) {
+    <button class={twerge.It("px-4 py-2 rounded " + twerge.If(primary, "bg-blue-500 text-white", "bg-gray-200 text-gray-800"))}>
+        Click me
+    </button>
+}
+
+templ Layout() {
+    <div class={twerge.It("min-h-screen bg-gray-50 text-gray-900 flex flex-col")}>
+        <header class={twerge.It("bg-indigo-600 text-white shadow-md")}>
+            <div class={twerge.It("container mx-auto px-4 py-4 flex justify-between items-center")}>
+                <!-- header content -->
+            </div>
+        </header>
+        <main class={twerge.It("container mx-auto px-4 py-6 flex-grow")}>
+            <!-- main content -->
+        </main>
+    </div>
 }
 ```
-`twerge` introduces a required code generation step to improve performance of the runtime application.
 
-This code generation step requires a golang program to be run in order to render all to be used templ templates and generate the required code.
+## Code Generation Workflow
+
+### 1. Create Generation Script
+```go
+//go:build ignore
+
+package main
+
+import "github.com/conneroisu/twerge"
+
+func main() {
+    g := twerge.Default()
+    err := g.CodeGen(
+        g,
+        "views/gen_twerge.go",    // Generated Go file
+        "views/twerge.css",       // Generated CSS file  
+        "views/twerge.html",      // Generated HTML file
+        views.Button(true),       // Components to analyze
+        views.Layout(),
+        // ... other components
+    )
+    if err != nil {
+        panic(err)
+    }
+}
+```
+
+### 2. Generated Output
+
+**CSS File** (`views/twerge.css`):
+```css
+/* twerge:begin */
+/* from px-4 py-2 rounded bg-blue-500 text-white */
+.tw-1 {
+    @apply px-4 py-2 rounded bg-blue-500 text-white;
+}
+/* from min-h-screen bg-gray-50 text-gray-900 flex flex-col */
+.tw-2 {
+    @apply min-h-screen bg-gray-50 text-gray-900 flex flex-col;
+}
+/* twerge:end */
+```
+
+**Go File** (`views/gen_twerge.go`):
+```go
+package views
+
+import "github.com/conneroisu/twerge"
+
+func init() {
+    twerge.SetCache(map[string]twerge.CacheValue{
+        "px-4 py-2 rounded bg-blue-500 text-white": {
+            Generated: "tw-1",
+            Merged: "px-4 py-2 rounded bg-blue-500 text-white",
+        },
+        // ... more mappings
+    })
+}
+```
+
+### 3. Build Process
+```bash
+# 1. Generate twerge files
+go run gen.go
+
+# 2. Build CSS with TailwindCSS
+tailwindcss -i input.css -o _static/dist/styles.css
+
+# 3. Build Go application
+go build
+```
+
+## Advanced Features
+
+### Generator Configuration
+```go
+type Handler interface {
+    It(string) string
+    Cache() map[string]CacheValue
+    SetCache(map[string]CacheValue)
+}
+
+// Custom generator
+g := twerge.New(customHandler)
+
+// Default generator  
+g := twerge.Default()
+```
+
+### Cache Management
+```go
+// Access cache
+cache := g.Cache()
+
+// Cache value structure
+type CacheValue struct {
+    Generated string // Short class name (e.g., "tw-1")
+    Merged    string // Final merged classes
+}
+```
+
+## Development Commands
+
+### Core Commands
+```bash
+# Run tests
+go test ./...
+
+# Run specific test
+go test -run TestIt ./...
+
+# Code generation
+go generate ./...
+
+# Run examples
+go run examples/simple/main.go
+```
+
+### Nix Development (if available)
+```bash
+# Enter development environment
+nix develop
+
+# Available commands
+tests           # Run all tests with verbose output
+lint            # Run linting tools
+format          # Format all code files
+generate-all    # Generate documentation
+coverage-tests  # Run tests with coverage
+```
+
+## Project Structure
+
+```
+twerge/
+├── twerge.go          # Core class processing engine
+├── tw.go              # Code generation system  
+├── config.go          # TailwindCSS configuration and conflict resolution
+├── debug.go           # Debug utilities
+├── examples/          # Example integrations
+│   ├── simple/        # Basic usage
+│   ├── dashboard/     # Complex dashboard
+│   └── admin-dashboard/ # Advanced admin interface
+├── internal/files/    # Internal file utilities
+└── benchmarks/        # Performance benchmarks
+```
+
+## Key Files for Understanding
+- `twerge.go:15-25` - Main It() function implementation
+- `tw.go:45-60` - CodeGen() function for static generation  
+- `config.go:100-200` - Class conflict resolution logic
+- `examples/*/gen.go` - Code generation patterns
+- `examples/*/views/*.templ` - Usage examples in templates
+
+## Performance Benefits
+
+1. **Runtime Speed**: Static class lookups instead of runtime parsing
+2. **Bundle Size**: Short generated class names reduce CSS size
+3. **Conflict Resolution**: Automatic handling of competing classes
+4. **Build-Time Optimization**: All processing happens during build, not runtime
+5. **TailwindCSS Integration**: Works seamlessly with TailwindCSS purging and optimization
+
+## Best Practices
+
+1. Use `twerge.It()` for all TailwindCSS classes in templates
+2. Use `twerge.If()` for conditional class application  
+3. Run CodeGen as part of your build process
+4. Include generated CSS in your TailwindCSS build pipeline
+5. Avoid manual string concatenation for class names
+6. Test class merging behavior with conflicting classes

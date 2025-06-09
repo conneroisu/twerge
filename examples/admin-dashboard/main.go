@@ -23,7 +23,7 @@ func main() {
 	http.HandleFunc("/static/", handleStatic)
 
 	// Start server
-	port := ":8081"
+	port := ":8082"
 	fmt.Printf("Starting server on http://localhost%s\n", port)
 	if err := http.ListenAndServe(port, nil); err != nil {
 		log.Fatal(err)
@@ -33,7 +33,7 @@ func main() {
 func handleDashboard(w http.ResponseWriter, r *http.Request) {
 	// Get sidebar state from query params
 	collapsed := r.URL.Query().Get("sidebar") == "collapsed"
-	
+
 	// Render the dashboard
 	err := views.Dashboard(collapsed).Render(r.Context(), w)
 	if err != nil {
@@ -45,7 +45,7 @@ func handleDashboard(w http.ResponseWriter, r *http.Request) {
 func handleStatic(w http.ResponseWriter, r *http.Request) {
 	// Serve static files from the static directory
 	path := r.URL.Path[len("/static/"):]
-	
+
 	// Determine the file path
 	var filePath string
 	switch path {
@@ -54,13 +54,13 @@ func handleStatic(w http.ResponseWriter, r *http.Request) {
 	default:
 		filePath = filepath.Join("static", path)
 	}
-	
+
 	// Check if file exists
 	if _, err := os.Stat(filePath); os.IsNotExist(err) {
 		http.NotFound(w, r)
 		return
 	}
-	
+
 	// Serve the file
 	http.ServeFile(w, r, filePath)
 }
