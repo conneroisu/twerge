@@ -1,0 +1,296 @@
+package views
+
+import (
+	"github.com/conneroisu/twerge"
+	"strconv"
+)
+
+// Helper function to get nav item classes
+func getNavItemClasses(active, hasSubmenu bool) string {
+	baseClasses := "flex items-center px-4 py-2 text-sm font-medium rounded-lg transition-colors duration-200"
+	
+	// Add active/inactive classes
+	if active {
+		baseClasses += " bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-200"
+	} else {
+		baseClasses += " text-gray-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-800"
+	}
+	
+	// Add group class if has submenu
+	if hasSubmenu {
+		baseClasses += " group"
+	}
+	
+	return twerge.It(baseClasses)
+}
+
+// Dashboard layout
+templ Dashboard(sidebarCollapsed bool) {
+	<!DOCTYPE html>
+	<html lang="en">
+		<head>
+			<meta charset="UTF-8"/>
+			<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+			<title>Admin Dashboard</title>
+			<link rel="stylesheet" href="/static/styles.css"/>
+		</head>
+		<body class={ twerge.It("min-h-screen bg-gray-50 dark:bg-gray-900") }>
+			<div class={ twerge.It("flex h-screen overflow-hidden") }>
+				@Sidebar(sidebarCollapsed)
+				
+				<!-- Main content area -->
+				<div class={ twerge.It("flex-1 flex flex-col overflow-hidden") }>
+					@Header()
+					
+					<!-- Dashboard content -->
+					<main class={ twerge.It("flex-1 overflow-y-auto p-4 lg:p-6") }>
+						@MetricsGrid()
+						
+						<div class={ twerge.It("mt-8 grid grid-cols-1 lg:grid-cols-2 gap-6") }>
+							<div>
+								<h2 class={ twerge.It("text-lg font-semibold text-gray-900 dark:text-white mb-4") }>
+									Recent Orders
+								</h2>
+								@DataTable([]string{"Order ID", "Customer", "Amount", "Status"}, "Amount", true)
+							</div>
+							
+							<div>
+								<h2 class={ twerge.It("text-lg font-semibold text-gray-900 dark:text-white mb-4") }>
+									Top Products
+								</h2>
+								@DataTable([]string{"Product", "Sales", "Revenue", "Stock"}, "Revenue", true)
+							</div>
+						</div>
+					</main>
+				</div>
+			</div>
+		</body>
+	</html>
+}
+
+// Sidebar component
+templ Sidebar(collapsed bool) {
+	<aside class={ twerge.It(
+		"w-64 lg:w-80 xl:w-96 " +
+		"md:translate-x-0 " +
+		twerge.If(collapsed, "-translate-x-full md:translate-x-0", "translate-x-0") +
+		" transition-transform duration-300 ease-in-out " +
+		"bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700",
+	) }>
+		<div class={ twerge.It("h-full flex flex-col") }>
+			<!-- Logo -->
+			<div class={ twerge.It("flex items-center justify-between h-16 px-6 border-b border-gray-200 dark:border-gray-700") }>
+				<h1 class={ twerge.It("text-xl font-bold text-gray-900 dark:text-white") }>
+					Admin Panel
+				</h1>
+			</div>
+			
+			<!-- Navigation -->
+			<nav class={ twerge.It("flex-1 overflow-y-auto py-4") }>
+				<ul class={ twerge.It("space-y-1 px-3") }>
+					@NavItem("Dashboard", "/", true, false)
+					@NavItem("Users", "/users", false, true)
+					@NavItem("Products", "/products", false, true)
+					@NavItem("Orders", "/orders", false, false)
+					@NavItem("Analytics", "/analytics", false, false)
+					@NavItem("Settings", "/settings", false, false)
+				</ul>
+			</nav>
+		</div>
+	</aside>
+}
+
+// Header component
+templ Header() {
+	<header class={ twerge.It("bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700") }>
+		<div class={ twerge.It("flex items-center justify-between h-16 px-6") }>
+			<button class={ twerge.It(
+				"md:hidden p-2 rounded-lg text-gray-500 hover:bg-gray-100 " +
+				"dark:text-gray-400 dark:hover:bg-gray-700 transition-colors duration-200",
+			) }>
+				<svg class={ twerge.It("w-6 h-6") } fill="none" stroke="currentColor" viewBox="0 0 24 24">
+					<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+				</svg>
+			</button>
+			
+			<div class={ twerge.It("flex items-center space-x-4") }>
+				<!-- Search -->
+				<div class={ twerge.It("hidden md:block relative") }>
+					<input 
+						type="search" 
+						placeholder="Search..."
+						class={ twerge.It(
+							"w-64 px-4 py-2 pl-10 text-sm border rounded-lg " +
+							"bg-gray-50 dark:bg-gray-900 border-gray-300 dark:border-gray-600 " +
+							"focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent",
+						) }
+					/>
+					<svg class={ twerge.It("absolute left-3 top-2.5 w-5 h-5 text-gray-400") } fill="none" stroke="currentColor" viewBox="0 0 24 24">
+						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+					</svg>
+				</div>
+				
+				<!-- Notifications -->
+				<button class={ twerge.It(
+					"p-2 rounded-lg text-gray-500 hover:bg-gray-100 " +
+					"dark:text-gray-400 dark:hover:bg-gray-700 transition-colors duration-200 relative",
+				) }>
+					<svg class={ twerge.It("w-6 h-6") } fill="none" stroke="currentColor" viewBox="0 0 24 24">
+						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
+					</svg>
+					<span class={ twerge.It("absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full") }></span>
+				</button>
+				
+				<!-- Profile -->
+				<button class={ twerge.It(
+					"flex items-center space-x-3 p-2 rounded-lg hover:bg-gray-100 " +
+					"dark:hover:bg-gray-700 transition-colors duration-200",
+				) }>
+					<img 
+						src="https://ui-avatars.com/api/?name=John+Doe&background=3b82f6&color=fff" 
+						alt="Profile"
+						class={ twerge.It("w-8 h-8 rounded-full") }
+					/>
+					<span class={ twerge.It("hidden md:block text-sm font-medium text-gray-700 dark:text-gray-300") }>
+						John Doe
+					</span>
+				</button>
+			</div>
+		</div>
+	</header>
+}
+
+// Navigation item component
+templ NavItem(label, href string, active, hasSubmenu bool) {
+	<li>
+		<a href={ templ.SafeURL(href) } class={ getNavItemClasses(active, hasSubmenu) }>
+			<svg class={ twerge.It("mr-3 h-5 w-5") } fill="none" stroke="currentColor" viewBox="0 0 24 24">
+				if label == "Dashboard" {
+					<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+				} else if label == "Users" {
+					<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
+				} else {
+					<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+				}
+			</svg>
+			{ label }
+			if hasSubmenu {
+				<svg class={ twerge.It("ml-auto h-4 w-4 transition-transform group-hover:rotate-90") } fill="none" stroke="currentColor" viewBox="0 0 24 24">
+					<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+				</svg>
+			}
+		</a>
+	</li>
+}
+
+// Metrics grid component
+templ MetricsGrid() {
+	<div class={ twerge.It(
+		"grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 " +
+		"gap-4 lg:gap-6 xl:gap-8",
+	) }>
+		@MetricCard("Users", "12,345", "↗ 12%", true)
+		@MetricCard("Revenue", "$56,789", "↗ 8%", true)
+		@MetricCard("Orders", "1,234", "↘ 3%", false)
+		@MetricCard("Conversion", "3.2%", "↗ 0.5%", true)
+	</div>
+}
+
+// Metric card component
+templ MetricCard(title, value, change string, isPositive bool) {
+	<div class={ twerge.It(
+		"bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 " +
+		"border border-gray-200 dark:border-gray-700 " +
+		"hover:shadow-md transition-shadow duration-200",
+	) }>
+		<div class={ twerge.It("flex items-center justify-between") }>
+			<h3 class={ twerge.It("text-sm font-medium text-gray-500 dark:text-gray-400") }>
+				{ title }
+			</h3>
+			<span class={ twerge.It(
+				"text-sm font-medium " +
+				twerge.If(isPositive,
+					"text-green-600 dark:text-green-400",
+					"text-red-600 dark:text-red-400",
+				),
+			) }>
+				{ change }
+			</span>
+		</div>
+		<p class={ twerge.It("mt-2 text-2xl font-bold text-gray-900 dark:text-white") }>
+			{ value }
+		</p>
+	</div>
+}
+
+// Data table component
+templ DataTable(columns []string, sortColumn string, sortDesc bool) {
+	<div class={ twerge.It("overflow-x-auto bg-white dark:bg-gray-800 shadow-lg rounded-lg") }>
+		<table class={ twerge.It("min-w-full divide-y divide-gray-200 dark:divide-gray-700") }>
+			<thead class={ twerge.It("bg-gray-50 dark:bg-gray-900") }>
+				<tr>
+					for _, col := range columns {
+						@TableHeader(col, col == sortColumn, sortDesc)
+					}
+				</tr>
+			</thead>
+			<tbody class={ twerge.It("bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700") }>
+				<!-- Sample data rows -->
+				for i := 0; i < 5; i++ {
+					<tr class={ twerge.It("hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200") }>
+						for _, col := range columns {
+							<td class={ twerge.It("px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white") }>
+								if col == "Status" {
+									@StatusBadge(i%3 == 0)
+								} else {
+									Sample { col } { strconv.Itoa(i + 1) }
+								}
+							</td>
+						}
+					</tr>
+				}
+			</tbody>
+		</table>
+	</div>
+}
+
+// Table header component
+templ TableHeader(label string, sorted, desc bool) {
+	<th class={ twerge.It(
+		"px-6 py-3 text-left text-xs font-medium uppercase tracking-wider " +
+		"cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 " +
+		twerge.If(sorted,
+			"text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20",
+			"text-gray-500 dark:text-gray-400",
+		),
+	) }>
+		<div class={ twerge.It("flex items-center space-x-1") }>
+			<span>{ label }</span>
+			if sorted {
+				<svg class={ twerge.It(
+					"h-4 w-4 transition-transform " +
+					twerge.If(desc, "rotate-180", "rotate-0"),
+				) } fill="currentColor" viewBox="0 0 20 20">
+					<path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+				</svg>
+			}
+		</div>
+	</th>
+}
+
+// Status badge component
+templ StatusBadge(active bool) {
+	<span class={ twerge.It(
+		"inline-flex px-2 text-xs font-semibold leading-5 rounded-full " +
+		twerge.If(active,
+			"bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200",
+			"bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200",
+		),
+	) }>
+		if active {
+			Active
+		} else {
+			Inactive
+		}
+	</span>
+}
