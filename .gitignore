@@ -8,9 +8,8 @@
 go.work
 go.work.sum
 .env
-.direnv
-.vscode
 node_modules
+.vscode
 .idea
-CLAUDE.md
+.direnv
 result

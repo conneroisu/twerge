@@ -1,0 +1,21 @@
+
+{
+  "permissions": {
+    "allow": [
+      "Bash(nix develop -c :*)",
+      "Bash(npm run test:*)"
+    ],
+    "deny": [
+      "Bash(curl:*)"
+    ]
+  },
+  "mcpServers": {
+    "playwright": {
+      "command": "npx",
+      "args": [
+        "@playwright/mcp@latest",
+        "--vision"
+      ]
+    }
+  }
+}
