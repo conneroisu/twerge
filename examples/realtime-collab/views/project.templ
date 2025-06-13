@@ -1,0 +1,563 @@
+package views
+
+import (
+	"fmt"
+	"github.com/conneroisu/twerge/examples/realtime-collab/types"
+	"github.com/conneroisu/twerge"
+)
+
+templ ProjectView(project types.Project, documents []types.Document, members []types.ProjectMember, user types.User) {
+	<div class={ twerge.It("min-h-screen bg-gray-50 dark:bg-gray-900") }>
+		<div class={ twerge.It("flex h-screen") }>
+			@ProjectSidebar(project, documents, members, user)
+			<div class={ twerge.It("flex-1 flex flex-col overflow-hidden") }>
+				@ProjectHeader(project, user)
+				<main class={ twerge.It("flex-1 overflow-x-hidden overflow-y-auto bg-white dark:bg-gray-800") }>
+					<div class={ twerge.It("container mx-auto px-6 py-8") }>
+						@ProjectContent(project, documents, members)
+					</div>
+				</main>
+			</div>
+		</div>
+		@CollaboratorCursors()
+		@RealTimeNotifications()
+	</div>
+}
+
+templ ProjectSidebar(project types.Project, documents []types.Document, members []types.ProjectMember, user types.User) {
+	<div class={ twerge.It("hidden md:flex md:w-64 md:flex-col md:fixed md:inset-y-0") }>
+		<div class={ twerge.It("flex-1 flex flex-col min-h-0 bg-gray-800 dark:bg-gray-900") }>
+			<div class={ twerge.It("flex-1 flex flex-col pt-5 pb-4 overflow-y-auto") }>
+				<div class={ twerge.It("flex items-center flex-shrink-0 px-4") }>
+					<div class={ twerge.It("flex items-center") }>
+						<div class={ twerge.It("h-8 w-8 rounded-lg bg-gradient-to-r from-blue-500 to-indigo-600 flex items-center justify-center") }>
+							<span class={ twerge.It("text-white font-bold text-sm") }>{ string(project.Name[0]) }</span>
+						</div>
+						<div class={ twerge.It("ml-3") }>
+							<h1 class={ twerge.It("text-lg font-medium text-white truncate") }>{ project.Name }</h1>
+							<p class={ twerge.It("text-sm text-gray-300") }>{ len(members) } members</p>
+						</div>
+					</div>
+				</div>
+				<nav class={ twerge.It("mt-5 flex-1 px-2 space-y-1") }>
+					@SidebarNavItem("Overview", "#overview", "M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z", true)
+					@SidebarNavItem("Documents", "#documents", "M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z", false)
+					@SidebarNavItem("Board", "#board", "M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 0v10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2h-2a2 2 0 00-2 2z", false)
+					@SidebarNavItem("Timeline", "#timeline", "M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z", false)
+					@SidebarNavItem("Settings", "#settings", "M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z", false)
+				</nav>
+			</div>
+			<div class={ twerge.It("flex-shrink-0 flex bg-gray-700 dark:bg-gray-800 p-4") }>
+				@OnlineMembers(members)
+			</div>
+		</div>
+	</div>
+}
+
+templ SidebarNavItem(name, href, iconPath string, isActive bool) {
+	<a href={ templ.SafeURL(href) } class={ twerge.If(isActive,
+		"bg-gray-900 text-white group flex items-center px-2 py-2 text-sm font-medium rounded-md",
+		"text-gray-300 hover:bg-gray-700 hover:text-white group flex items-center px-2 py-2 text-sm font-medium rounded-md transition-colors duration-200") }>
+		<svg class={ twerge.If(isActive,
+			"text-gray-300 mr-3 flex-shrink-0 h-6 w-6",
+			"text-gray-400 group-hover:text-gray-300 mr-3 flex-shrink-0 h-6 w-6") } fill="none" viewBox="0 0 24 24" stroke="currentColor">
+			<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d={ iconPath }></path>
+		</svg>
+		{ name }
+	</a>
+}
+
+templ OnlineMembers(members []types.ProjectMember) {
+	<div class={ twerge.It("w-full") }>
+		<h3 class={ twerge.It("text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3") }>
+			Online Now ({ fmt.Sprintf("%d", len(members)) })
+		</h3>
+		<div class={ twerge.It("space-y-2") }>
+			for i, member := range members {
+				if i >= 5 {
+					break
+				}
+				if member.User.IsOnline {
+					@OnlineMemberItem(member.User)
+				}
+			}
+		</div>
+	</div>
+}
+
+templ OnlineMemberItem(user types.User) {
+	<div class={ twerge.It("flex items-center") }>
+		<div class={ twerge.It("relative") }>
+			<img class={ twerge.It("h-6 w-6 rounded-full") } src={ user.Avatar } alt={ user.Username }/>
+			<span class={ twerge.It("absolute -bottom-0 -right-0 block h-2 w-2 rounded-full bg-green-400 ring-1 ring-white") }></span>
+		</div>
+		<div class={ twerge.It("ml-2 flex-1 min-w-0") }>
+			<p class={ twerge.It("text-sm font-medium text-white truncate") }>{ user.Username }</p>
+			<p class={ twerge.It("text-xs text-gray-300") }>{ string(user.Status) }</p>
+		</div>
+	</div>
+}
+
+templ ProjectHeader(project types.Project, user types.User) {
+	<header class={ twerge.It("bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700") }>
+		<div class={ twerge.It("max-w-7xl mx-auto px-4 sm:px-6 lg:px-8") }>
+			<div class={ twerge.It("flex justify-between items-center py-6 md:justify-start md:space-x-10") }>
+				<div class={ twerge.It("flex justify-start lg:w-0 lg:flex-1") }>
+					<h1 class={ twerge.It("text-2xl font-bold text-gray-900 dark:text-white") }>{ project.Name }</h1>
+					<span class={ twerge.If(project.Status == types.ProjectStatusActive,
+						"ml-3 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-400",
+						"ml-3 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-300") }>
+						{ string(project.Status) }
+					</span>
+				</div>
+				<div class={ twerge.It("hidden md:flex items-center justify-end md:flex-1 lg:w-0") }>
+					@ProjectActions(project, user)
+				</div>
+			</div>
+		</div>
+		@ProjectTabs()
+	</header>
+}
+
+templ ProjectActions(project types.Project, user types.User) {
+	<div class={ twerge.It("flex items-center space-x-4") }>
+		@ShareButton(project)
+		@ExportButton(project)
+		@MoreActionsMenu(project, user)
+	</div>
+}
+
+templ ShareButton(project types.Project) {
+	<button class={ twerge.It("inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200") }
+			@click="$dispatch('open-share-modal')">
+		<svg class={ twerge.It("-ml-1 mr-2 h-4 w-4") } fill="none" viewBox="0 0 24 24" stroke="currentColor">
+			<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z"/>
+		</svg>
+		Share
+	</button>
+}
+
+templ ExportButton(project types.Project) {
+	<button class={ twerge.It("inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 text-sm font-medium rounded-md text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200") }>
+		<svg class={ twerge.It("-ml-1 mr-2 h-4 w-4") } fill="none" viewBox="0 0 24 24" stroke="currentColor">
+			<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+		</svg>
+		Export
+	</button>
+}
+
+templ MoreActionsMenu(project types.Project, user types.User) {
+	<div class={ twerge.It("relative") } x-data="{ open: false }">
+		<button type="button" class={ twerge.It("bg-white dark:bg-gray-700 rounded-full flex items-center text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500") } @click="open = !open">
+			<span class={ twerge.It("sr-only") }>Open options</span>
+			<svg class={ twerge.It("h-5 w-5") } viewBox="0 0 20 20" fill="currentColor">
+				<path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z"/>
+			</svg>
+		</button>
+		<div class={ twerge.It("origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white dark:bg-gray-800 ring-1 ring-black ring-opacity-5") } 
+			 x-show="open" @click.outside="open = false" x-transition>
+			<div class={ twerge.It("py-1") }>
+				<a href="#" class={ twerge.It("block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700") }>Edit Project</a>
+				<a href="#" class={ twerge.It("block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700") }>Manage Members</a>
+				<a href="#" class={ twerge.It("block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700") }>View Analytics</a>
+				<a href="#" class={ twerge.It("block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700") }>Archive Project</a>
+			</div>
+		</div>
+	</div>
+}
+
+templ ProjectTabs() {
+	<div class={ twerge.It("border-t border-gray-200 dark:border-gray-700") }>
+		<nav class={ twerge.It("max-w-7xl mx-auto px-4 sm:px-6 lg:px-8") }>
+			<div class={ twerge.It("flex space-x-8") }>
+				@TabItem("Overview", "#overview", true)
+				@TabItem("Documents", "#documents", false)
+				@TabItem("Board", "#board", false)
+				@TabItem("Timeline", "#timeline", false)
+				@TabItem("Members", "#members", false)
+			</div>
+		</nav>
+	</div>
+}
+
+templ TabItem(name, href string, isActive bool) {
+	<a href={ templ.SafeURL(href) } class={ twerge.If(isActive,
+		"border-blue-500 text-blue-600 dark:text-blue-400 whitespace-nowrap border-b-2 py-4 px-1 text-sm font-medium",
+		"border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300 dark:hover:border-gray-600 whitespace-nowrap border-b-2 py-4 px-1 text-sm font-medium transition-colors duration-200") }>
+		{ name }
+	</a>
+}
+
+templ ProjectContent(project types.Project, documents []types.Document, members []types.ProjectMember) {
+	<div class={ twerge.It("space-y-8") }>
+		@ProjectOverview(project)
+		@QuickStats(project, documents, members)
+		<div class={ twerge.It("grid grid-cols-1 lg:grid-cols-3 gap-8") }>
+			<div class={ twerge.It("lg:col-span-2 space-y-8") }>
+				@RecentDocuments(documents)
+				@ProjectTimeline(project.Activity)
+			</div>
+			<div class={ twerge.It("space-y-8") }>
+				@TeamMembers(members)
+				@ProjectTasks(project)
+			</div>
+		</div>
+	</div>
+}
+
+templ ProjectOverview(project types.Project) {
+	<div class={ twerge.It("bg-white dark:bg-gray-800 shadow rounded-lg") }>
+		<div class={ twerge.It("px-6 py-5 border-b border-gray-200 dark:border-gray-700") }>
+			<h3 class={ twerge.It("text-lg leading-6 font-medium text-gray-900 dark:text-white") }>Project Overview</h3>
+		</div>
+		<div class={ twerge.It("px-6 py-5") }>
+			<div class={ twerge.It("grid grid-cols-1 gap-6 sm:grid-cols-2") }>
+				<div>
+					<dt class={ twerge.It("text-sm font-medium text-gray-500 dark:text-gray-400") }>Description</dt>
+					<dd class={ twerge.It("mt-1 text-sm text-gray-900 dark:text-white") }>{ project.Description }</dd>
+				</div>
+				<div>
+					<dt class={ twerge.It("text-sm font-medium text-gray-500 dark:text-gray-400") }>Owner</dt>
+					<dd class={ twerge.It("mt-1 flex items-center text-sm text-gray-900 dark:text-white") }>
+						<img class={ twerge.It("h-6 w-6 rounded-full mr-2") } src={ project.Owner.Avatar } alt={ project.Owner.Username }/>
+						{ project.Owner.Username }
+					</dd>
+				</div>
+				<div>
+					<dt class={ twerge.It("text-sm font-medium text-gray-500 dark:text-gray-400") }>Created</dt>
+					<dd class={ twerge.It("mt-1 text-sm text-gray-900 dark:text-white") }>{ project.CreatedAt.Format("January 2, 2006") }</dd>
+				</div>
+				<div>
+					<dt class={ twerge.It("text-sm font-medium text-gray-500 dark:text-gray-400") }>Last Updated</dt>
+					<dd class={ twerge.It("mt-1 text-sm text-gray-900 dark:text-white") }>{ project.UpdatedAt.Format("January 2, 2006") }</dd>
+				</div>
+				if project.DeadlineAt != nil {
+					<div>
+						<dt class={ twerge.It("text-sm font-medium text-gray-500 dark:text-gray-400") }>Deadline</dt>
+						<dd class={ twerge.It("mt-1 text-sm text-gray-900 dark:text-white") }>{ project.DeadlineAt.Format("January 2, 2006") }</dd>
+					</div>
+				}
+				<div>
+					<dt class={ twerge.It("text-sm font-medium text-gray-500 dark:text-gray-400") }>Priority</dt>
+					<dd class={ twerge.It("mt-1") }>
+						<span class={ twerge.If(project.Priority == types.PriorityHigh,
+							"inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-400",
+							twerge.If(project.Priority == types.PriorityMedium,
+								"inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-400",
+								"inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-400")) }>
+							{ string(project.Priority) }
+						</span>
+					</dd>
+				</div>
+			</div>
+			if len(project.Tags) > 0 {
+				<div class={ twerge.It("mt-6") }>
+					<dt class={ twerge.It("text-sm font-medium text-gray-500 dark:text-gray-400") }>Tags</dt>
+					<dd class={ twerge.It("mt-2 flex flex-wrap gap-2") }>
+						for _, tag := range project.Tags {
+							<span class={ twerge.It("inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-300") }>
+								{ tag }
+							</span>
+						}
+					</dd>
+				</div>
+			}
+		</div>
+	</div>
+}
+
+templ QuickStats(project types.Project, documents []types.Document, members []types.ProjectMember) {
+	<div class={ twerge.It("grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4") }>
+		@QuickStatCard("Documents", fmt.Sprintf("%d", len(documents)), "text-blue-600 dark:text-blue-400", "M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z")
+		@QuickStatCard("Members", fmt.Sprintf("%d", len(members)), "text-green-600 dark:text-green-400", "M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z")
+		@QuickStatCard("Comments", fmt.Sprintf("%d", project.Analytics.TotalComments), "text-purple-600 dark:text-purple-400", "M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z")
+		@QuickStatCard("Views", fmt.Sprintf("%d", project.Analytics.TotalViews), "text-amber-600 dark:text-amber-400", "M15 12a3 3 0 11-6 0 3 3 0 016 0z")
+	</div>
+}
+
+templ QuickStatCard(title, value, colorClass, iconPath string) {
+	<div class={ twerge.It("bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg") }>
+		<div class={ twerge.It("p-5") }>
+			<div class={ twerge.It("flex items-center") }>
+				<div class={ twerge.It("flex-shrink-0") }>
+					<svg class={ fmt.Sprintf("h-6 w-6 %s", colorClass) } fill="none" viewBox="0 0 24 24" stroke="currentColor">
+						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d={ iconPath }></path>
+					</svg>
+				</div>
+				<div class={ twerge.It("ml-5 w-0 flex-1") }>
+					<dl>
+						<dt class={ twerge.It("text-sm font-medium text-gray-500 dark:text-gray-400 truncate") }>{ title }</dt>
+						<dd class={ twerge.It("text-lg font-medium text-gray-900 dark:text-white") }>{ value }</dd>
+					</dl>
+				</div>
+			</div>
+		</div>
+	</div>
+}
+
+templ RecentDocuments(documents []types.Document) {
+	<div class={ twerge.It("bg-white dark:bg-gray-800 shadow rounded-lg") }>
+		<div class={ twerge.It("px-6 py-5 border-b border-gray-200 dark:border-gray-700") }>
+			<div class={ twerge.It("flex items-center justify-between") }>
+				<h3 class={ twerge.It("text-lg leading-6 font-medium text-gray-900 dark:text-white") }>Recent Documents</h3>
+				<button class={ twerge.It("text-sm font-medium text-blue-600 dark:text-blue-400 hover:text-blue-500 dark:hover:text-blue-300") }>
+					View all
+				</button>
+			</div>
+		</div>
+		<ul role="list" class={ twerge.It("divide-y divide-gray-200 dark:divide-gray-700") }>
+			for i, doc := range documents {
+				if i >= 5 {
+					break
+				}
+				@DocumentListItem(doc)
+			}
+		</ul>
+	</div>
+}
+
+templ DocumentListItem(doc types.Document) {
+	<li class={ twerge.It("px-6 py-4 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200") }>
+		<div class={ twerge.It("flex items-center justify-between") }>
+			<div class={ twerge.It("flex items-center") }>
+				<div class={ twerge.It("flex-shrink-0 h-10 w-10") }>
+					<div class={ twerge.It("h-10 w-10 rounded-lg bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center") }>
+						@DocumentTypeIcon(doc.Type)
+					</div>
+				</div>
+				<div class={ twerge.It("ml-4") }>
+					<div class={ twerge.It("flex items-center") }>
+						<p class={ twerge.It("text-sm font-medium text-gray-900 dark:text-white") }>{ doc.Title }</p>
+						<span class={ twerge.If(doc.Status == types.DocumentStatusPublished,
+							"ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-400",
+							"ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-400") }>
+							{ string(doc.Status) }
+						</span>
+					</div>
+					<p class={ twerge.It("text-sm text-gray-500 dark:text-gray-400") }>
+						Last edited by { doc.Author.Username } • { doc.UpdatedAt.Format("Jan 2, 3:04 PM") }
+					</p>
+				</div>
+			</div>
+			<div class={ twerge.It("flex items-center space-x-2") }>
+				if len(doc.Editors) > 0 {
+					<div class={ twerge.It("flex -space-x-1 overflow-hidden") }>
+						for j, editor := range doc.Editors {
+							if j >= 3 {
+								break
+							}
+							<img class={ twerge.It("inline-block h-6 w-6 rounded-full ring-2 ring-white dark:ring-gray-800") } 
+								 src={ editor.Avatar } alt={ editor.Username }/>
+						}
+						if len(doc.Editors) > 3 {
+							<span class={ twerge.It("inline-flex h-6 w-6 items-center justify-center rounded-full bg-gray-100 dark:bg-gray-700 ring-2 ring-white dark:ring-gray-800") }>
+								<span class={ twerge.It("text-xs font-medium text-gray-500 dark:text-gray-400") }>{ fmt.Sprintf("+%d", len(doc.Editors)-3) }</span>
+							</span>
+						}
+					</div>
+				}
+				<button class={ twerge.It("text-gray-400 hover:text-gray-500 dark:hover:text-gray-300") }>
+					<svg class={ twerge.It("h-5 w-5") } viewBox="0 0 20 20" fill="currentColor">
+						<path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z"/>
+					</svg>
+				</button>
+			</div>
+		</div>
+	</li>
+}
+
+templ DocumentTypeIcon(docType types.DocumentType) {
+	switch docType {
+		case types.DocumentTypeMarkdown:
+			<svg class={ twerge.It("h-6 w-6 text-blue-600 dark:text-blue-400") } fill="currentColor" viewBox="0 0 20 20">
+				<path d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm1 2h10v8H5V5z"/>
+			</svg>
+		case types.DocumentTypeCode:
+			<svg class={ twerge.It("h-6 w-6 text-green-600 dark:text-green-400") } fill="currentColor" viewBox="0 0 20 20">
+				<path fill-rule="evenodd" d="M12.316 3.051a1 1 0 01.633 1.265l-4 12a1 1 0 11-1.898-.632l4-12a1 1 0 011.265-.633zM5.707 6.293a1 1 0 010 1.414L3.414 10l2.293 2.293a1 1 0 11-1.414 1.414l-3-3a1 1 0 010-1.414l3-3a1 1 0 011.414 0zm8.586 0a1 1 0 011.414 0l3 3a1 1 0 010 1.414l-3 3a1 1 0 11-1.414-1.414L16.586 10l-2.293-2.293a1 1 0 010-1.414z" clip-rule="evenodd"/>
+			</svg>
+		default:
+			<svg class={ twerge.It("h-6 w-6 text-gray-600 dark:text-gray-400") } fill="currentColor" viewBox="0 0 20 20">
+				<path fill-rule="evenodd" d="M4 4a2 2 0 012-2h8a2 2 0 012 2v12a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 0v12h8V4H6z" clip-rule="evenodd"/>
+			</svg>
+	}
+}
+
+templ ProjectTimeline(activities []types.ActivityEvent) {
+	<div class={ twerge.It("bg-white dark:bg-gray-800 shadow rounded-lg") }>
+		<div class={ twerge.It("px-6 py-5 border-b border-gray-200 dark:border-gray-700") }>
+			<h3 class={ twerge.It("text-lg leading-6 font-medium text-gray-900 dark:text-white") }>Project Timeline</h3>
+		</div>
+		<div class={ twerge.It("px-6 py-6") }>
+			<div class={ twerge.It("flow-root") }>
+				<ul role="list" class={ twerge.It("-mb-8") }>
+					for i, activity := range activities {
+						if i >= 8 {
+							break
+						}
+						@TimelineActivityItem(activity, i < len(activities)-1)
+					}
+				</ul>
+			</div>
+		</div>
+	</div>
+}
+
+templ TimelineActivityItem(activity types.ActivityEvent, hasNext bool) {
+	<li>
+		<div class={ twerge.It("relative pb-8") }>
+			if hasNext {
+				<span class={ twerge.It("absolute left-5 top-5 -ml-px h-full w-0.5 bg-gray-200 dark:bg-gray-700") }></span>
+			}
+			<div class={ twerge.It("relative flex items-start space-x-3") }>
+				<div class={ twerge.It("relative") }>
+					<img class={ twerge.It("h-10 w-10 rounded-full bg-gray-400 flex items-center justify-center ring-8 ring-white dark:ring-gray-800") } 
+						 src={ activity.Actor.Avatar } alt={ activity.Actor.Username }/>
+					<span class={ twerge.It("absolute -bottom-0.5 -right-1 bg-white dark:bg-gray-800 rounded-tl px-0.5 py-px") }>
+						@TimelineActivityIcon(activity.Type)
+					</span>
+				</div>
+				<div class={ twerge.It("min-w-0 flex-1") }>
+					<div>
+						<div class={ twerge.It("text-sm") }>
+							<span class={ twerge.It("font-medium text-gray-900 dark:text-white") }>{ activity.Actor.Username }</span>
+						</div>
+						<p class={ twerge.It("mt-0.5 text-sm text-gray-500 dark:text-gray-400") }>
+							{ activity.Description }
+						</p>
+					</div>
+					<div class={ twerge.It("mt-2 text-sm text-gray-700 dark:text-gray-300") }>
+						<p>{ activity.Target.Name }</p>
+					</div>
+					<div class={ twerge.It("mt-2") }>
+						<span class={ twerge.It("text-xs text-gray-500 dark:text-gray-400") }>
+							{ activity.CreatedAt.Format("Jan 2, 2006 at 3:04 PM") }
+						</span>
+					</div>
+				</div>
+			</div>
+		</div>
+	</li>
+}
+
+templ TimelineActivityIcon(activityType types.ActivityType) {
+	switch activityType {
+		case types.ActivityDocumentCreated:
+			<svg class={ twerge.It("h-5 w-5 text-blue-500") } fill="currentColor" viewBox="0 0 20 20">
+				<path fill-rule="evenodd" d="M4 4a2 2 0 012-2h8a2 2 0 012 2v12a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 0v12h8V4H6z" clip-rule="evenodd"/>
+			</svg>
+		case types.ActivityCommentAdded:
+			<svg class={ twerge.It("h-5 w-5 text-green-500") } fill="currentColor" viewBox="0 0 20 20">
+				<path fill-rule="evenodd" d="M18 5v8a2 2 0 01-2 2h-5l-5 4v-4H4a2 2 0 01-2-2V5a2 2 0 012-2h12a2 2 0 012 2zM7 8H5v2h2V8zm2 0h2v2H9V8zm6 0h-2v2h2V8z" clip-rule="evenodd"/>
+			</svg>
+		default:
+			<svg class={ twerge.It("h-5 w-5 text-gray-500") } fill="currentColor" viewBox="0 0 20 20">
+				<path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+			</svg>
+	}
+}
+
+templ TeamMembers(members []types.ProjectMember) {
+	<div class={ twerge.It("bg-white dark:bg-gray-800 shadow rounded-lg") }>
+		<div class={ twerge.It("px-6 py-5 border-b border-gray-200 dark:border-gray-700") }>
+			<div class={ twerge.It("flex items-center justify-between") }>
+				<h3 class={ twerge.It("text-lg leading-6 font-medium text-gray-900 dark:text-white") }>Team Members</h3>
+				<button class={ twerge.It("text-sm font-medium text-blue-600 dark:text-blue-400 hover:text-blue-500 dark:hover:text-blue-300") }>
+					Manage
+				</button>
+			</div>
+		</div>
+		<ul role="list" class={ twerge.It("divide-y divide-gray-200 dark:divide-gray-700") }>
+			for _, member := range members {
+				@TeamMemberItem(member)
+			}
+		</ul>
+	</div>
+}
+
+templ TeamMemberItem(member types.ProjectMember) {
+	<li class={ twerge.It("px-6 py-4") }>
+		<div class={ twerge.It("flex items-center justify-between") }>
+			<div class={ twerge.It("flex items-center") }>
+				<div class={ twerge.It("relative") }>
+					<img class={ twerge.It("h-10 w-10 rounded-full") } src={ member.User.Avatar } alt={ member.User.Username }/>
+					if member.User.IsOnline {
+						<span class={ twerge.It("absolute -bottom-0 -right-0 block h-3 w-3 rounded-full bg-green-400 ring-2 ring-white dark:ring-gray-800") }></span>
+					}
+				</div>
+				<div class={ twerge.It("ml-4") }>
+					<div class={ twerge.It("flex items-center") }>
+						<p class={ twerge.It("text-sm font-medium text-gray-900 dark:text-white") }>{ member.User.Username }</p>
+						<span class={ twerge.If(member.Role == types.ProjectRoleOwner,
+							"ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 dark:bg-purple-900/30 text-purple-800 dark:text-purple-400",
+							"ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-300") }>
+							{ string(member.Role) }
+						</span>
+					</div>
+					<p class={ twerge.It("text-sm text-gray-500 dark:text-gray-400") }>
+						{ member.User.Email }
+					</p>
+				</div>
+			</div>
+			<div class={ twerge.It("flex items-center") }>
+				<span class={ twerge.It("text-sm text-gray-500 dark:text-gray-400") }>
+					Joined { member.JoinedAt.Format("Jan 2006") }
+				</span>
+			</div>
+		</div>
+	</li>
+}
+
+templ ProjectTasks(project types.Project) {
+	<div class={ twerge.It("bg-white dark:bg-gray-800 shadow rounded-lg") }>
+		<div class={ twerge.It("px-6 py-5 border-b border-gray-200 dark:border-gray-700") }>
+			<div class={ twerge.It("flex items-center justify-between") }>
+				<h3 class={ twerge.It("text-lg leading-6 font-medium text-gray-900 dark:text-white") }>Quick Tasks</h3>
+				<button class={ twerge.It("text-sm font-medium text-blue-600 dark:text-blue-400 hover:text-blue-500 dark:hover:text-blue-300") }>
+					View all
+				</button>
+			</div>
+		</div>
+		<div class={ twerge.It("px-6 py-5") }>
+			<div class={ twerge.It("space-y-4") }>
+				@TaskItem("Review document drafts", "3 pending", false)
+				@TaskItem("Update project timeline", "Due tomorrow", true)
+				@TaskItem("Schedule team meeting", "This week", false)
+				@TaskItem("Finalize requirements", "In progress", false)
+			</div>
+		</div>
+	</div>
+}
+
+templ TaskItem(title, subtitle string, isUrgent bool) {
+	<div class={ twerge.It("flex items-center justify-between") }>
+		<div class={ twerge.It("flex items-center") }>
+			<input type="checkbox" class={ twerge.It("h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 dark:border-gray-600 rounded") }/>
+			<div class={ twerge.It("ml-3") }>
+				<p class={ twerge.It("text-sm font-medium text-gray-900 dark:text-white") }>{ title }</p>
+				<p class={ twerge.If(isUrgent,
+					"text-sm text-red-600 dark:text-red-400",
+					"text-sm text-gray-500 dark:text-gray-400") }>
+					{ subtitle }
+				</p>
+			</div>
+		</div>
+		<button class={ twerge.It("text-gray-400 hover:text-gray-500 dark:hover:text-gray-300") }>
+			<svg class={ twerge.It("h-5 w-5") } viewBox="0 0 20 20" fill="currentColor">
+				<path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z"/>
+			</svg>
+		</button>
+	</div>
+}
+
+templ CollaboratorCursors() {
+	<div id="collaborator-cursors" class={ twerge.It("absolute inset-0 pointer-events-none z-50") }>
+		<!-- Real-time cursor positions will be injected here -->
+	</div>
+}
+
+templ RealTimeNotifications() {
+	<div id="realtime-notifications" class={ twerge.It("fixed top-4 right-4 z-50 space-y-4") } x-data="{ notifications: [] }">
+		<!-- Real-time notifications will be injected here -->
+	</div>
+}

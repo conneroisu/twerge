@@ -1,0 +1,604 @@
+package views
+
+import (
+	"fmt"
+	"github.com/conneroisu/twerge/examples/realtime-collab/types"
+	"github.com/conneroisu/twerge"
+)
+
+templ DashboardLayout(user types.User, stats types.DashboardStats, notifications []types.Notification) {
+	<!DOCTYPE html>
+	<html lang="en" class="h-full">
+		<head>
+			<meta charset="UTF-8"/>
+			<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+			<title>Collaborative Dashboard - Realtime Workspace</title>
+			<link href="/_static/dist/styles.css" rel="stylesheet"/>
+			<script src="https://unpkg.com/htmx.org@1.9.6"></script>
+			<script src="https://unpkg.com/alpinejs@3.13.1/dist/cdn.min.js" defer></script>
+		</head>
+		<body class={ twerge.It("min-h-full bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-900 dark:via-slate-800 dark:to-indigo-900") }>
+			<div class={ twerge.It("min-h-full") }>
+				@NavigationSidebar(user, stats)
+				<div class={ twerge.It("lg:pl-72") }>
+					@TopBar(user, notifications)
+					<main class={ twerge.It("py-10") }>
+						<div class={ twerge.It("px-4 sm:px-6 lg:px-8") }>
+							@DashboardContent(stats, user)
+						</div>
+					</main>
+				</div>
+			</div>
+			@NotificationCenter(notifications)
+			@RealTimeIndicator()
+		</body>
+	</html>
+}
+
+templ NavigationSidebar(user types.User, stats types.DashboardStats) {
+	<div class={ twerge.It("hidden lg:fixed lg:inset-y-0 lg:z-50 lg:flex lg:w-72 lg:flex-col") }>
+		<div class={ twerge.It("flex grow flex-col gap-y-5 overflow-y-auto border-r border-gray-200 dark:border-gray-700 bg-white/95 dark:bg-gray-900/95 backdrop-blur-xl px-6 pb-4") }>
+			<div class={ twerge.It("flex h-16 shrink-0 items-center") }>
+				<div class={ twerge.It("flex items-center space-x-3") }>
+					<div class={ twerge.It("h-8 w-8 rounded-lg bg-gradient-to-r from-blue-500 to-indigo-600 flex items-center justify-center") }>
+						<svg class={ twerge.It("h-5 w-5 text-white") } fill="none" viewBox="0 0 24 24" stroke="currentColor">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+						</svg>
+					</div>
+					<h1 class={ twerge.It("text-xl font-bold text-gray-900 dark:text-white") }>CollabSpace</h1>
+				</div>
+			</div>
+			<nav class={ twerge.It("flex flex-1 flex-col") }>
+				<ul role="list" class={ twerge.It("flex flex-1 flex-col gap-y-7") }>
+					<li>
+						<ul role="list" class={ twerge.It("-mx-2 space-y-1") }>
+							@NavigationItem("Dashboard", "/", "M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z", true)
+							@NavigationItem("Projects", "/projects", "M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10", false)
+							@NavigationItem("Documents", "/documents", "M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z", false)
+							@NavigationItem("Team", "/team", "M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z", false)
+							@NavigationItem("Analytics", "/analytics", "M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z", false)
+						</ul>
+					</li>
+					<li>
+						<div class={ twerge.It("text-xs font-semibold leading-6 text-gray-400 dark:text-gray-500") }>
+							Recent Projects
+						</div>
+						<ul role="list" class={ twerge.It("-mx-2 mt-2 space-y-1") }>
+							for i, project := range stats.TopProjects {
+								if i >= 3 {
+									break
+								}
+								@RecentProjectItem(project)
+							}
+						</ul>
+					</li>
+					<li class={ twerge.It("mt-auto") }>
+						@SystemHealthWidget(stats.SystemHealth)
+					</li>
+				</ul>
+			</nav>
+		</div>
+	</div>
+}
+
+templ NavigationItem(name, href, iconPath string, isActive bool) {
+	<li>
+		<a href={ templ.SafeURL(href) } class={ twerge.If(isActive, 
+			"bg-blue-50 dark:bg-blue-900/50 border-r-2 border-blue-500 text-blue-700 dark:text-blue-300 group flex gap-x-3 rounded-l-md p-2 text-sm leading-6 font-semibold",
+			"text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-gray-50 dark:hover:bg-gray-800 group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-medium transition-all duration-200") }>
+			<svg class={ twerge.If(isActive,
+				"text-blue-500 h-6 w-6 shrink-0",
+				"text-gray-400 group-hover:text-blue-500 h-6 w-6 shrink-0 transition-colors duration-200") } fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+				<path stroke-linecap="round" stroke-linejoin="round" d={ iconPath }></path>
+			</svg>
+			{ name }
+		</a>
+	</li>
+}
+
+templ RecentProjectItem(project types.Project) {
+	<li>
+		<a href={ templ.SafeURL(fmt.Sprintf("/projects/%s", project.ID)) } 
+		   class={ twerge.It("text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-gray-50 dark:hover:bg-gray-800 group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-medium transition-all duration-200") }>
+			<span class={ twerge.It("flex h-6 w-6 shrink-0 items-center justify-center rounded-lg border text-[0.625rem] font-medium bg-white dark:bg-gray-800 text-gray-400 group-hover:border-blue-200 group-hover:text-blue-600 dark:group-hover:text-blue-400") }>
+				{ string(project.Name[0]) }
+			</span>
+			<span class={ twerge.It("truncate") }>{ project.Name }</span>
+		</a>
+	</li>
+}
+
+templ SystemHealthWidget(health types.SystemHealth) {
+	<div class={ twerge.It("rounded-lg p-3 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700") }>
+		<div class={ twerge.It("flex items-center justify-between mb-2") }>
+			<span class={ twerge.It("text-xs font-medium text-gray-500 dark:text-gray-400") }>System Health</span>
+			<span class={ twerge.If(health.Status == types.HealthStatusHealthy,
+				"inline-flex items-center rounded-full bg-green-100 dark:bg-green-900/30 px-2 py-1 text-xs font-medium text-green-700 dark:text-green-400",
+				"inline-flex items-center rounded-full bg-red-100 dark:bg-red-900/30 px-2 py-1 text-xs font-medium text-red-700 dark:text-red-400") }>
+				{ string(health.Status) }
+			</span>
+		</div>
+		<div class={ twerge.It("space-y-1") }>
+			@HealthMetric("CPU", health.CPUUsage)
+			@HealthMetric("Memory", health.MemoryUsage)
+			@HealthMetric("Disk", health.DiskUsage)
+		</div>
+	</div>
+}
+
+templ HealthMetric(label string, value float64) {
+	<div class={ twerge.It("flex items-center justify-between text-xs") }>
+		<span class={ twerge.It("text-gray-600 dark:text-gray-400") }>{ label }</span>
+		<div class={ twerge.It("flex items-center space-x-2") }>
+			<div class={ twerge.It("w-16 bg-gray-200 dark:bg-gray-700 rounded-full h-1") }>
+				<div class={ twerge.If(value > 80,
+					"bg-red-500 h-1 rounded-full transition-all duration-300",
+					twerge.If(value > 60,
+						"bg-yellow-500 h-1 rounded-full transition-all duration-300",
+						"bg-green-500 h-1 rounded-full transition-all duration-300")) } 
+					 style={ fmt.Sprintf("width: %.1f%%", value) }></div>
+			</div>
+			<span class={ twerge.It("text-gray-500 dark:text-gray-400 font-mono") }>{ fmt.Sprintf("%.1f%%", value) }</span>
+		</div>
+	</div>
+}
+
+templ TopBar(user types.User, notifications []types.Notification) {
+	<div class={ twerge.It("sticky top-0 z-40 flex h-16 shrink-0 items-center gap-x-4 border-b border-gray-200 dark:border-gray-700 bg-white/95 dark:bg-gray-900/95 backdrop-blur-xl px-4 shadow-sm sm:gap-x-6 sm:px-6 lg:px-8") }>
+		<button type="button" class={ twerge.It("-m-2.5 p-2.5 text-gray-700 dark:text-gray-300 lg:hidden") }>
+			<span class={ twerge.It("sr-only") }>Open sidebar</span>
+			<svg class={ twerge.It("h-6 w-6") } fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+				<path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"/>
+			</svg>
+		</button>
+		<div class={ twerge.It("h-6 w-px bg-gray-900/10 dark:bg-white/10 lg:hidden") }></div>
+		<div class={ twerge.It("flex flex-1 gap-x-4 self-stretch lg:gap-x-6") }>
+			<div class={ twerge.It("relative flex flex-1") }>
+				@GlobalSearchBar()
+			</div>
+			<div class={ twerge.It("flex items-center gap-x-4 lg:gap-x-6") }>
+				@NotificationButton(notifications)
+				@CollaborationIndicator()
+				@UserMenu(user)
+			</div>
+		</div>
+	</div>
+}
+
+templ GlobalSearchBar() {
+	<div class={ twerge.It("relative flex flex-1 max-w-md") } x-data="{ open: false }">
+		<label for="search-field" class={ twerge.It("sr-only") }>Search</label>
+		<svg class={ twerge.It("pointer-events-none absolute inset-y-0 left-0 h-full w-5 text-gray-400 dark:text-gray-500") } viewBox="0 0 20 20" fill="currentColor">
+			<path fill-rule="evenodd" d="M9 3.5a5.5 5.5 0 100 11 5.5 5.5 0 000-11zM2 9a7 7 0 1112.452 4.391l3.328 3.329a.75.75 0 11-1.06 1.06l-3.329-3.328A7 7 0 012 9z" clip-rule="evenodd"/>
+		</svg>
+		<input id="search-field" class={ twerge.It("block h-full w-full border-0 py-0 pl-8 pr-0 text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-0 sm:text-sm bg-transparent") } 
+			   placeholder="Search projects, documents, users..." type="search" name="search"
+			   @focus="open = true" @blur="setTimeout(() => open = false, 200)"
+			   hx-get="/api/search" hx-trigger="keyup changed delay:300ms" hx-target="next .search-results"/>
+		<div class={ twerge.It("absolute top-full left-0 right-0 mt-1 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 max-h-96 overflow-y-auto") } 
+			 x-show="open" x-transition class="search-results">
+		</div>
+	</div>
+}
+
+templ NotificationButton(notifications []types.Notification) {
+	<button type="button" class={ twerge.It("relative -m-2.5 p-2.5 text-gray-400 hover:text-gray-500 dark:hover:text-gray-300 transition-colors duration-200") } 
+			@click="$dispatch('toggle-notifications')">
+		<span class={ twerge.It("sr-only") }>View notifications</span>
+		<svg class={ twerge.It("h-6 w-6") } fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+			<path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0"/>
+		</svg>
+		if len(notifications) > 0 {
+			<span class={ twerge.It("absolute -top-0.5 -right-0.5 h-4 w-4 rounded-full bg-red-500 flex items-center justify-center") }>
+				<span class={ twerge.It("text-xs font-medium text-white") }>{ fmt.Sprintf("%d", len(notifications)) }</span>
+			</span>
+		}
+	</button>
+}
+
+templ CollaborationIndicator() {
+	<div class={ twerge.It("flex items-center space-x-2") }>
+		<div class={ twerge.It("flex -space-x-2 overflow-hidden") }>
+			<!-- Online collaborators avatars -->
+			<img class={ twerge.It("inline-block h-8 w-8 rounded-full ring-2 ring-white dark:ring-gray-900") } 
+				 src="https://images.unsplash.com/photo-1491528323818-fdd1faba62cc?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80" alt=""/>
+			<img class={ twerge.It("inline-block h-8 w-8 rounded-full ring-2 ring-white dark:ring-gray-900") } 
+				 src="https://images.unsplash.com/photo-1550525811-e5869dd03032?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80" alt=""/>
+			<span class={ twerge.It("inline-flex h-8 w-8 items-center justify-center rounded-full bg-gray-100 dark:bg-gray-800 ring-2 ring-white dark:ring-gray-900") }>
+				<span class={ twerge.It("text-xs font-medium text-gray-500 dark:text-gray-400") }>+3</span>
+			</span>
+		</div>
+		<div class={ twerge.It("flex items-center space-x-1") }>
+			<div class={ twerge.It("h-2 w-2 rounded-full bg-green-400 animate-pulse") }></div>
+			<span class={ twerge.It("text-sm text-gray-500 dark:text-gray-400") }>5 online</span>
+		</div>
+	</div>
+}
+
+templ UserMenu(user types.User) {
+	<div class={ twerge.It("relative") } x-data="{ open: false }">
+		<button type="button" class={ twerge.It("flex items-center gap-x-4 text-sm leading-6 text-gray-900 dark:text-white") } @click="open = !open">
+			<img class={ twerge.It("h-8 w-8 rounded-full bg-gray-50 dark:bg-gray-800 ring-2 ring-white dark:ring-gray-700") } 
+				 src={ user.Avatar } alt={ user.Username }/>
+			<span class={ twerge.It("hidden lg:flex lg:items-center") }>
+				<span class={ twerge.It("font-semibold") }>{ user.Username }</span>
+				<svg class={ twerge.It("ml-2 h-5 w-5 text-gray-400") } viewBox="0 0 20 20" fill="currentColor">
+					<path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd"/>
+				</svg>
+			</span>
+		</button>
+		<div class={ twerge.It("absolute right-0 z-10 mt-2.5 w-32 origin-top-right rounded-md bg-white dark:bg-gray-800 py-2 shadow-lg ring-1 ring-gray-900/5 dark:ring-gray-700 focus:outline-none") } 
+			 x-show="open" @click.outside="open = false" x-transition>
+			<a href="/profile" class={ twerge.It("block px-3 py-1 text-sm leading-6 text-gray-900 dark:text-white hover:bg-gray-50 dark:hover:bg-gray-700") }>Your profile</a>
+			<a href="/settings" class={ twerge.It("block px-3 py-1 text-sm leading-6 text-gray-900 dark:text-white hover:bg-gray-50 dark:hover:bg-gray-700") }>Settings</a>
+			<a href="/logout" class={ twerge.It("block px-3 py-1 text-sm leading-6 text-gray-900 dark:text-white hover:bg-gray-50 dark:hover:bg-gray-700") }>Sign out</a>
+		</div>
+	</div>
+}
+
+templ DashboardContent(stats types.DashboardStats, user types.User) {
+	<div class={ twerge.It("space-y-8") }>
+		@WelcomeHero(user)
+		@StatsOverview(stats)
+		<div class={ twerge.It("grid grid-cols-1 gap-8 xl:grid-cols-3") }>
+			<div class={ twerge.It("xl:col-span-2") }>
+				@RecentActivityFeed(stats.RecentActivity)
+			</div>
+			<div class={ twerge.It("space-y-8") }>
+				@ProjectStatusChart(stats)
+				@TopContributors(stats.TopUsers)
+			</div>
+		</div>
+		@ActiveProjects(stats.TopProjects)
+	</div>
+}
+
+templ WelcomeHero(user types.User) {
+	<div class={ twerge.It("relative overflow-hidden rounded-2xl bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 p-8 shadow-2xl") }>
+		<div class={ twerge.It("absolute inset-0 bg-black/20") }></div>
+		<div class={ twerge.It("relative z-10") }>
+			<h1 class={ twerge.It("text-3xl font-bold tracking-tight text-white sm:text-4xl") }>
+				Welcome back, { user.Username }!
+			</h1>
+			<p class={ twerge.It("mt-2 text-lg text-blue-100") }>
+				You have 3 active projects and 12 pending notifications
+			</p>
+			<div class={ twerge.It("mt-6 flex items-center space-x-4") }>
+				<button class={ twerge.It("rounded-md bg-white/10 backdrop-blur-sm px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-white/20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white transition-all duration-200") }>
+					Create Project
+				</button>
+				<button class={ twerge.It("rounded-md border border-white/30 px-4 py-2 text-sm font-semibold text-white hover:border-white/50 hover:bg-white/10 transition-all duration-200") }>
+					View All Projects
+				</button>
+			</div>
+		</div>
+		<div class={ twerge.It("absolute -top-6 -right-6 h-32 w-32 rounded-full bg-white/10 backdrop-blur-sm") }></div>
+		<div class={ twerge.It("absolute -bottom-8 -left-8 h-24 w-24 rounded-full bg-white/5 backdrop-blur-sm") }></div>
+	</div>
+}
+
+templ StatsOverview(stats types.DashboardStats) {
+	<div class={ twerge.It("grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-4") }>
+		@StatCard("Total Projects", fmt.Sprintf("%d", stats.TotalProjects), "text-blue-600 dark:text-blue-400", "M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10", "+12% from last month")
+		@StatCard("Active Projects", fmt.Sprintf("%d", stats.ActiveProjects), "text-green-600 dark:text-green-400", "M13 10V3L4 14h7v7l9-11h-7z", "+5% this week")
+		@StatCard("Team Members", fmt.Sprintf("%d", stats.TotalUsers), "text-purple-600 dark:text-purple-400", "M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z", "3 new this month")
+		@StatCard("Online Now", fmt.Sprintf("%d", stats.OnlineUsers), "text-amber-600 dark:text-amber-400", "M12.01 2.011a3.2 3.2 0 00-2.394.962L3.336 9.251a3.25 3.25 0 004.596 4.596l6.278-6.278a3.2 3.2 0 00.962-2.394 3.2 3.2 0 00-.962-2.394L12.01 2.011z", "Peak: 18 users")
+	</div>
+}
+
+templ StatCard(title, value, colorClass, iconPath, subtitle string) {
+	<div class={ twerge.It("relative overflow-hidden rounded-xl bg-white dark:bg-gray-800 p-6 shadow-sm ring-1 ring-gray-900/5 dark:ring-gray-700 hover:shadow-md transition-shadow duration-200") }>
+		<dt class={ twerge.It("text-sm font-medium leading-6 text-gray-500 dark:text-gray-400") }>{ title }</dt>
+		<dd class={ twerge.It("flex items-baseline gap-x-2") }>
+			<span class={ twerge.It("text-4xl font-semibold tracking-tight text-gray-900 dark:text-white") }>{ value }</span>
+			<svg class={ fmt.Sprintf("h-6 w-6 %s", colorClass) } fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+				<path stroke-linecap="round" stroke-linejoin="round" d={ iconPath }></path>
+			</svg>
+		</dd>
+		<p class={ twerge.It("mt-2 text-sm text-gray-600 dark:text-gray-400") }>{ subtitle }</p>
+		<div class={ twerge.It("absolute inset-x-0 -top-px h-px bg-gradient-to-r from-transparent via-gray-200 dark:via-gray-700 to-transparent") }></div>
+	</div>
+}
+
+templ RecentActivityFeed(activities []types.ActivityEvent) {
+	<div class={ twerge.It("rounded-xl bg-white dark:bg-gray-800 shadow-sm ring-1 ring-gray-900/5 dark:ring-gray-700") }>
+		<div class={ twerge.It("px-6 py-4 border-b border-gray-200 dark:border-gray-700") }>
+			<h3 class={ twerge.It("text-lg font-semibold text-gray-900 dark:text-white") }>Recent Activity</h3>
+			<p class={ twerge.It("text-sm text-gray-500 dark:text-gray-400") }>Latest updates from your team</p>
+		</div>
+		<div class={ twerge.It("px-6 py-6") }>
+			<div class={ twerge.It("flow-root") }>
+				<ul role="list" class={ twerge.It("-mb-8") }>
+					for i, activity := range activities {
+						if i >= 5 {
+							break
+						}
+						@ActivityItem(activity, i < len(activities)-1)
+					}
+				</ul>
+			</div>
+		</div>
+		<div class={ twerge.It("px-6 py-4 border-t border-gray-200 dark:border-gray-700") }>
+			<button class={ twerge.It("text-sm font-medium text-blue-600 dark:text-blue-400 hover:text-blue-500 dark:hover:text-blue-300") }>
+				View all activity →
+			</button>
+		</div>
+	</div>
+}
+
+templ ActivityItem(activity types.ActivityEvent, hasNext bool) {
+	<li>
+		<div class={ twerge.It("relative pb-8") }>
+			if hasNext {
+				<span class={ twerge.It("absolute left-4 top-4 -ml-px h-full w-0.5 bg-gray-200 dark:bg-gray-700") }></span>
+			}
+			<div class={ twerge.It("relative flex space-x-3") }>
+				<div>
+					<span class={ twerge.If(activity.IsImportant,
+						"h-8 w-8 rounded-full bg-red-500 flex items-center justify-center ring-8 ring-white dark:ring-gray-800",
+						"h-8 w-8 rounded-full bg-blue-500 flex items-center justify-center ring-8 ring-white dark:ring-gray-800") }>
+						@ActivityIcon(activity.Type)
+					</span>
+				</div>
+				<div class={ twerge.It("flex min-w-0 flex-1 justify-between space-x-4 pt-1.5") }>
+					<div>
+						<p class={ twerge.It("text-sm text-gray-900 dark:text-white") }>
+							<span class={ twerge.It("font-medium") }>{ activity.Actor.Username }</span>
+							{ activity.Description }
+						</p>
+						<p class={ twerge.It("mt-1 text-xs text-gray-500 dark:text-gray-400") }>
+							{ activity.Target.Name }
+						</p>
+					</div>
+					<div class={ twerge.It("whitespace-nowrap text-right text-sm text-gray-500 dark:text-gray-400") }>
+						<time>{ activity.CreatedAt.Format("3:04 PM") }</time>
+					</div>
+				</div>
+			</div>
+		</div>
+	</li>
+}
+
+templ ActivityIcon(activityType types.ActivityType) {
+	switch activityType {
+		case types.ActivityProjectCreated:
+			<svg class={ twerge.It("h-5 w-5 text-white") } fill="currentColor" viewBox="0 0 20 20">
+				<path d="M10 2L3 7v11h4v-6h6v6h4V7l-7-5z"/>
+			</svg>
+		case types.ActivityDocumentCreated:
+			<svg class={ twerge.It("h-5 w-5 text-white") } fill="currentColor" viewBox="0 0 20 20">
+				<path fill-rule="evenodd" d="M4 4a2 2 0 012-2h8a2 2 0 012 2v12a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 0v12h8V4H6z" clip-rule="evenodd"/>
+			</svg>
+		case types.ActivityCommentAdded:
+			<svg class={ twerge.It("h-5 w-5 text-white") } fill="currentColor" viewBox="0 0 20 20">
+				<path fill-rule="evenodd" d="M18 5v8a2 2 0 01-2 2h-5l-5 4v-4H4a2 2 0 01-2-2V5a2 2 0 012-2h12a2 2 0 012 2zM7 8H5v2h2V8zm2 0h2v2H9V8zm6 0h-2v2h2V8z" clip-rule="evenodd"/>
+			</svg>
+		default:
+			<svg class={ twerge.It("h-5 w-5 text-white") } fill="currentColor" viewBox="0 0 20 20">
+				<path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+			</svg>
+	}
+}
+
+templ ProjectStatusChart(stats types.DashboardStats) {
+	<div class={ twerge.It("rounded-xl bg-white dark:bg-gray-800 p-6 shadow-sm ring-1 ring-gray-900/5 dark:ring-gray-700") }>
+		<h3 class={ twerge.It("text-lg font-semibold text-gray-900 dark:text-white") }>Project Status</h3>
+		<div class={ twerge.It("mt-6 space-y-4") }>
+			for status, count := range stats.ProjectsByStatus {
+				@StatusProgressBar(string(status), count, stats.TotalProjects)
+			}
+		</div>
+	</div>
+}
+
+templ StatusProgressBar(status string, count, total int) {
+	<div>
+		<div class={ twerge.It("flex items-center justify-between text-sm") }>
+			<span class={ twerge.It("font-medium text-gray-900 dark:text-white capitalize") }>{ status }</span>
+			<span class={ twerge.It("text-gray-500 dark:text-gray-400") }>{ fmt.Sprintf("%d", count) }</span>
+		</div>
+		<div class={ twerge.It("mt-1 h-2 rounded-full bg-gray-200 dark:bg-gray-700") }>
+			<div class={ twerge.It("h-2 rounded-full bg-gradient-to-r from-blue-500 to-purple-500 transition-all duration-300") } 
+				 style={ fmt.Sprintf("width: %.1f%%", float64(count)/float64(total)*100) }></div>
+		</div>
+	</div>
+}
+
+templ TopContributors(users []types.User) {
+	<div class={ twerge.It("rounded-xl bg-white dark:bg-gray-800 p-6 shadow-sm ring-1 ring-gray-900/5 dark:ring-gray-700") }>
+		<h3 class={ twerge.It("text-lg font-semibold text-gray-900 dark:text-white") }>Top Contributors</h3>
+		<div class={ twerge.It("mt-6 space-y-4") }>
+			for i, user := range users {
+				if i >= 5 {
+					break
+				}
+				@ContributorItem(user, i+1)
+			}
+		</div>
+	</div>
+}
+
+templ ContributorItem(user types.User, rank int) {
+	<div class={ twerge.It("flex items-center space-x-3") }>
+		<div class={ twerge.It("flex-shrink-0") }>
+			<span class={ twerge.It("inline-flex h-6 w-6 items-center justify-center rounded-full bg-blue-100 dark:bg-blue-900/30 text-xs font-bold text-blue-600 dark:text-blue-400") }>
+				{ fmt.Sprintf("%d", rank) }
+			</span>
+		</div>
+		<img class={ twerge.It("h-8 w-8 rounded-full") } src={ user.Avatar } alt={ user.Username }/>
+		<div class={ twerge.It("flex-1 min-w-0") }>
+			<p class={ twerge.It("text-sm font-medium text-gray-900 dark:text-white truncate") }>{ user.Username }</p>
+			<p class={ twerge.It("text-xs text-gray-500 dark:text-gray-400") }>{ string(user.Role) }</p>
+		</div>
+		<div class={ twerge.It("flex items-center space-x-1") }>
+			if user.IsOnline {
+				<div class={ twerge.It("h-2 w-2 rounded-full bg-green-400") }></div>
+			} else {
+				<div class={ twerge.It("h-2 w-2 rounded-full bg-gray-300 dark:bg-gray-600") }></div>
+			}
+		</div>
+	</div>
+}
+
+templ ActiveProjects(projects []types.Project) {
+	<div class={ twerge.It("rounded-xl bg-white dark:bg-gray-800 shadow-sm ring-1 ring-gray-900/5 dark:ring-gray-700") }>
+		<div class={ twerge.It("px-6 py-4 border-b border-gray-200 dark:border-gray-700") }>
+			<div class={ twerge.It("flex items-center justify-between") }>
+				<h3 class={ twerge.It("text-lg font-semibold text-gray-900 dark:text-white") }>Active Projects</h3>
+				<button class={ twerge.It("text-sm font-medium text-blue-600 dark:text-blue-400 hover:text-blue-500 dark:hover:text-blue-300") }>
+					View all
+				</button>
+			</div>
+		</div>
+		<div class={ twerge.It("p-6") }>
+			<div class={ twerge.It("grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3") }>
+				for _, project := range projects {
+					@ProjectCard(project)
+				}
+			</div>
+		</div>
+	</div>
+}
+
+templ ProjectCard(project types.Project) {
+	<div class={ twerge.It("group relative rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-6 hover:shadow-md transition-all duration-200") }>
+		<div class={ twerge.It("flex items-center justify-between") }>
+			<div class={ twerge.It("flex items-center space-x-3") }>
+				<div class={ twerge.It("flex-shrink-0") }>
+					<span class={ twerge.If(project.Priority == types.PriorityHigh,
+						"inline-flex h-8 w-8 items-center justify-center rounded-lg bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400",
+						twerge.If(project.Priority == types.PriorityMedium,
+							"inline-flex h-8 w-8 items-center justify-center rounded-lg bg-yellow-100 dark:bg-yellow-900/30 text-yellow-600 dark:text-yellow-400",
+							"inline-flex h-8 w-8 items-center justify-center rounded-lg bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400")) }>
+						{ string(project.Name[0]) }
+					</span>
+				</div>
+				<div class={ twerge.It("flex-1 min-w-0") }>
+					<h4 class={ twerge.It("text-sm font-semibold text-gray-900 dark:text-white truncate") }>{ project.Name }</h4>
+					<p class={ twerge.It("text-xs text-gray-500 dark:text-gray-400") }>{ len(project.Members) } members</p>
+				</div>
+			</div>
+			<span class={ twerge.If(project.Status == types.ProjectStatusActive,
+				"inline-flex items-center rounded-full bg-green-100 dark:bg-green-900/30 px-2 py-1 text-xs font-medium text-green-700 dark:text-green-400",
+				"inline-flex items-center rounded-full bg-gray-100 dark:bg-gray-700 px-2 py-1 text-xs font-medium text-gray-700 dark:text-gray-300") }>
+				{ string(project.Status) }
+			</span>
+		</div>
+		<p class={ twerge.It("mt-4 text-sm text-gray-600 dark:text-gray-400 line-clamp-2") }>
+			{ project.Description }
+		</p>
+		<div class={ twerge.It("mt-4 flex items-center justify-between") }>
+			<div class={ twerge.It("flex -space-x-2 overflow-hidden") }>
+				for i, member := range project.Members {
+					if i >= 3 {
+						break
+					}
+					<img class={ twerge.It("inline-block h-6 w-6 rounded-full ring-2 ring-white dark:ring-gray-800") } 
+						 src={ member.User.Avatar } alt={ member.User.Username }/>
+				}
+				if len(project.Members) > 3 {
+					<span class={ twerge.It("inline-flex h-6 w-6 items-center justify-center rounded-full bg-gray-100 dark:bg-gray-700 ring-2 ring-white dark:ring-gray-800") }>
+						<span class={ twerge.It("text-xs font-medium text-gray-500 dark:text-gray-400") }>{ fmt.Sprintf("+%d", len(project.Members)-3) }</span>
+					</span>
+				}
+			</div>
+			<div class={ twerge.It("text-xs text-gray-500 dark:text-gray-400") }>
+				{ project.UpdatedAt.Format("Jan 2") }
+			</div>
+		</div>
+	</div>
+}
+
+templ NotificationCenter(notifications []types.Notification) {
+	<div class={ twerge.It("fixed inset-0 z-50 overflow-hidden") } x-data="{ open: false }" @toggle-notifications.window="open = !open" x-show="open">
+		<div class={ twerge.It("absolute inset-0 overflow-hidden") }>
+			<div class={ twerge.It("absolute inset-0 bg-gray-500 bg-opacity-75 transition-opacity") } @click="open = false"></div>
+			<section class={ twerge.It("absolute right-0 top-0 flex h-full w-full max-w-md flex-col bg-white dark:bg-gray-900 shadow-xl") }>
+				<div class={ twerge.It("flex h-0 flex-1 flex-col overflow-y-scroll py-6") }>
+					<div class={ twerge.It("px-4 sm:px-6") }>
+						<div class={ twerge.It("flex items-start justify-between") }>
+							<h2 class={ twerge.It("text-lg font-medium text-gray-900 dark:text-white") }>Notifications</h2>
+							<button type="button" class={ twerge.It("rounded-md text-gray-400 hover:text-gray-500 dark:hover:text-gray-300") } @click="open = false">
+								<span class={ twerge.It("sr-only") }>Close panel</span>
+								<svg class={ twerge.It("h-6 w-6") } fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+									<path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+								</svg>
+							</button>
+						</div>
+					</div>
+					<div class={ twerge.It("relative mt-6 flex-1 px-4 sm:px-6") }>
+						<div class={ twerge.It("space-y-4") }>
+							for _, notification := range notifications {
+								@NotificationItem(notification)
+							}
+						</div>
+					</div>
+				</div>
+			</section>
+		</div>
+	</div>
+}
+
+templ NotificationItem(notification types.Notification) {
+	<div class={ twerge.If(!notification.IsRead,
+		"rounded-lg bg-blue-50 dark:bg-blue-900/20 p-4 border-l-4 border-blue-400",
+		"rounded-lg bg-gray-50 dark:bg-gray-800 p-4 border-l-4 border-gray-300 dark:border-gray-600") }>
+		<div class={ twerge.It("flex items-start") }>
+			<div class={ twerge.It("flex-shrink-0") }>
+				@NotificationIcon(notification.Type)
+			</div>
+			<div class={ twerge.It("ml-3 flex-1") }>
+				<p class={ twerge.It("text-sm font-medium text-gray-900 dark:text-white") }>
+					{ notification.Title }
+				</p>
+				<p class={ twerge.It("mt-1 text-sm text-gray-600 dark:text-gray-300") }>
+					{ notification.Message }
+				</p>
+				<p class={ twerge.It("mt-2 text-xs text-gray-500 dark:text-gray-400") }>
+					{ notification.CreatedAt.Format("3:04 PM • Jan 2") }
+				</p>
+			</div>
+			if !notification.IsRead {
+				<div class={ twerge.It("ml-4 flex-shrink-0") }>
+					<button class={ twerge.It("rounded-full bg-blue-600 p-1 text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2") }>
+						<svg class={ twerge.It("h-3 w-3") } fill="currentColor" viewBox="0 0 8 8">
+							<circle cx="4" cy="4" r="3"/>
+						</svg>
+					</button>
+				</div>
+			}
+		</div>
+	</div>
+}
+
+templ NotificationIcon(notificationType types.NotificationType) {
+	switch notificationType {
+		case types.NotificationTypeSuccess:
+			<svg class={ twerge.It("h-5 w-5 text-green-400") } fill="currentColor" viewBox="0 0 20 20">
+				<path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+			</svg>
+		case types.NotificationTypeWarning:
+			<svg class={ twerge.It("h-5 w-5 text-yellow-400") } fill="currentColor" viewBox="0 0 20 20">
+				<path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+			</svg>
+		case types.NotificationTypeError:
+			<svg class={ twerge.It("h-5 w-5 text-red-400") } fill="currentColor" viewBox="0 0 20 20">
+				<path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+			</svg>
+		default:
+			<svg class={ twerge.It("h-5 w-5 text-blue-400") } fill="currentColor" viewBox="0 0 20 20">
+				<path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+			</svg>
+	}
+}
+
+templ RealTimeIndicator() {
+	<div class={ twerge.It("fixed bottom-4 right-4 z-40") } x-data="{ connected: true, lastPing: Date.now() }">
+		<div class={ twerge.If(true, // connected
+			"flex items-center space-x-2 rounded-full bg-green-100 dark:bg-green-900/30 px-3 py-2 text-sm font-medium text-green-700 dark:text-green-400 shadow-lg ring-1 ring-green-200 dark:ring-green-700",
+			"flex items-center space-x-2 rounded-full bg-red-100 dark:bg-red-900/30 px-3 py-2 text-sm font-medium text-red-700 dark:text-red-400 shadow-lg ring-1 ring-red-200 dark:ring-red-700") }>
+			<div class={ twerge.It("h-2 w-2 rounded-full bg-green-400 animate-pulse") }></div>
+			<span>Real-time connected</span>
+		</div>
+	</div>
+}
