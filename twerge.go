@@ -56,6 +56,16 @@ func It(raw string) string {
 	return Default().It(raw)
 }
 
+// IsDev returns true if the default generator is using a debug handler.
+func IsDev() bool {
+	gen := Default()
+	if gen == nil {
+		return false
+	}
+	_, ok := gen.Handler.(*DebugHandler)
+	return ok
+}
+
 // Generator generates all the code needed to use Twerge statically.
 //
 // At runtime, it uses the statically defined code, if configured, to
