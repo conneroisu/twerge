@@ -171,13 +171,14 @@ func generateGo(
 		"github.com/conneroisu/twerge",
 		"CacheValue",
 	).Values(jen.DictFunc(func(d jen.Dict) {
-		for k := range g.Cache() {
+		keys, values := sortMap(g.Cache())
+		for i, k := range keys {
 			d[jen.Lit(k)] = jen.Qual(
 				"github.com/conneroisu/twerge",
 				"CacheValue",
 			).Values(jen.Dict{
-				jen.Id("Generated"): jen.Lit(g.Cache()[k].Generated),
-				jen.Id("Merged"):    jen.Lit(g.Cache()[k].Merged),
+				jen.Id("Generated"): jen.Lit(values[i].Generated),
+				jen.Id("Merged"):    jen.Lit(values[i].Merged),
 			})
 		}
 	}))
