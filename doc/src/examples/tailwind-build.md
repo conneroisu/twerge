@@ -15,7 +15,7 @@ A typical Twerge-Tailwind integration includes these steps:
 
 Here's a simple build script that handles code generation and Tailwind processing:
 
-```go title="gen.go"
+```go title="build.go"
 //go:build ignore
 // +build ignore
 
@@ -212,7 +212,7 @@ func runBuild() {
 
 For production builds, you'll want to minify your CSS and use Tailwind's purge feature to remove unused styles:
 
-```go title="gen_prod.go"
+```go title="build_prod.go"
 //go:build ignore
 // +build ignore
 
@@ -292,10 +292,10 @@ func runTailwind(prod bool) {
 Usage:
 ```sh
 # Development build
-go run gen_prod.go
+go run build_prod.go
 
 # Production build (minified)
-go run gen_prod.go -prod
+go run build_prod.go -prod
 ```
 
 ## Makefile Integration
@@ -307,19 +307,19 @@ You can create a Makefile to simplify common build tasks:
 
 dev:
 	templ generate ./views
-	go run gen.go
+	go run build.go
 
 watch:
 	go run watch.go
 
 build:
 	templ generate ./views
-	go run gen.go
+	go run build.go
 	go build -o app ./main.go
 
 prod:
 	templ generate ./views
-	go run gen_prod.go -prod
+	go run build_prod.go -prod
 	go build -o app -ldflags="-s -w" ./main.go
 
 clean:
@@ -361,7 +361,7 @@ jobs:
       run: templ generate ./views
 
     - name: Build production CSS
-      run: go run gen_prod.go -prod
+      run: go run build_prod.go -prod
 
     - name: Build application
       run: go build -o app -ldflags="-s -w" ./main.go
@@ -405,7 +405,7 @@ COPY . .
 RUN templ generate ./views
 
 # Build with Twerge
-RUN go run gen_prod.go -prod
+RUN go run build_prod.go -prod
 
 # Build the Go application
 RUN CGO_ENABLED=0 GOOS=linux go build -o app -ldflags="-s -w" ./main.go
@@ -430,7 +430,7 @@ CMD ["./app"]
 
 You can extend your build script to generate multiple theme variants:
 
-```go title="gen_themes.go"
+```go title="build_themes.go"
 //go:build ignore
 // +build ignore
 
@@ -528,10 +528,10 @@ func runTailwind(input, output string) {
 Usage:
 ```sh
 # Build default theme
-go run gen_themes.go
+go run build_themes.go
 
 # Build dark theme
-go run gen_themes.go -theme dark
+go run build_themes.go -theme dark
 ```
 
 This example demonstrates how to integrate Twerge into your Tailwind CSS build process for both development and production environments.

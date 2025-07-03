@@ -135,7 +135,7 @@ jobs:
       - name: Generate templ code
         run: templ generate ./views
       - name: Run Twerge code generation
-        run: go run ./gen.go
+        run: go run ./build.go
       - name: Build application
         run: go build -o app
 ```

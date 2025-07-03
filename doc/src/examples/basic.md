@@ -15,7 +15,7 @@ simple/
 ├── classes/
 │   ├── classes.go      # Generated Go code with class mappings
 │   └── classes.html    # HTML output of class definitions 
-├── gen.go              # Code generation script
+├── build.go            # Code generation script
 ├── go.mod              # Go module file
 ├── input.css           # TailwindCSS input file
 ├── main.go             # Web server
@@ -27,9 +27,9 @@ simple/
 
 ### Code Generation
 
-The `gen.go` file handles Twerge code generation and TailwindCSS processing:
+The `build.go` file handles Twerge code generation and TailwindCSS processing:
 
-```go title="gen.go"
+```go title="build.go"
 //go:build ignore
 // +build ignore
 
@@ -149,7 +149,7 @@ templ generate ./views
 
 3. Run the code generation:
 ```sh
-go run gen.go
+go run build.go
 ```
 
 4. Run the server:

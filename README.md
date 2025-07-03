@@ -251,9 +251,15 @@ A typical development workflow with twerge:
 
 - [func CodeGen\(g \*Generator, goPath string, cssPath string, htmlPath string, comps ...templ.Component\) error](<#CodeGen>)
 - [func If\(ok bool, trueClass string, falseClass string\) string](<#If>)
+- [func IsDev\(\) bool](<#IsDev>)
 - [func It\(raw string\) string](<#It>)
 - [func SetDefault\(g \*Generator\)](<#SetDefault>)
 - [type CacheValue](<#CacheValue>)
+- [type DebugHandler](<#DebugHandler>)
+  - [func NewDebugHandler\(\) \*DebugHandler](<#NewDebugHandler>)
+  - [func \(d \*DebugHandler\) Cache\(\) map\[string\]CacheValue](<#DebugHandler.Cache>)
+  - [func \(d \*DebugHandler\) It\(s string\) string](<#DebugHandler.It>)
+  - [func \(d \*DebugHandler\) SetCache\(newC map\[string\]CacheValue\)](<#DebugHandler.SetCache>)
 - [type Generator](<#Generator>)
   - [func Default\(\) \*Generator](<#Default>)
   - [func New\(h Handler\) \*Generator](<#New>)
@@ -279,6 +285,15 @@ func If(ok bool, trueClass string, falseClass string) string
 ```
 
 If returns a short unique CSS class name from the merged classes taking an additional boolean parameter.
+
+<a name="IsDev"></a>
+## func [IsDev](<https://github.com/conneroisu/twerge/blob/main/twerge.go#L60>)
+
+```go
+func IsDev() bool
+```
+
+IsDev returns true if the default generator is using a debug handler.
 
 <a name="It"></a>
 ## func [It](<https://github.com/conneroisu/twerge/blob/main/twerge.go#L55>)
@@ -320,8 +335,59 @@ type CacheValue struct {
 }
 ```
 
+<a name="DebugHandler"></a>
+## type [DebugHandler](<https://github.com/conneroisu/twerge/blob/main/debug.go#L10-L13>)
+
+DebugHandler is a [Handler](<#Handler>) that can be used to debug tailwind classes.
+
+It is not meant to be used in production.
+
+It will return the same class name for the same input.
+
+```go
+type DebugHandler struct {
+    // contains filtered or unexported fields
+}
+```
+
+<a name="NewDebugHandler"></a>
+### func [NewDebugHandler](<https://github.com/conneroisu/twerge/blob/main/debug.go#L16>)
+
+```go
+func NewDebugHandler() *DebugHandler
+```
+
+NewDebugHandler creates a new DebugHandler.
+
+<a name="DebugHandler.Cache"></a>
+### func \(\*DebugHandler\) [Cache](<https://github.com/conneroisu/twerge/blob/main/debug.go#L28>)
+
+```go
+func (d *DebugHandler) Cache() map[string]CacheValue
+```
+
+Cache returns the cache of the [Generator](<#Generator>).
+
+<a name="DebugHandler.It"></a>
+### func \(\*DebugHandler\) [It](<https://github.com/conneroisu/twerge/blob/main/debug.go#L25>)
+
+```go
+func (d *DebugHandler) It(s string) string
+```
+
+It returns a short unique CSS class name from the merged classes.
+
+<a name="DebugHandler.SetCache"></a>
+### func \(\*DebugHandler\) [SetCache](<https://github.com/conneroisu/twerge/blob/main/debug.go#L35>)
+
+```go
+func (d *DebugHandler) SetCache(newC map[string]CacheValue)
+```
+
+SetCache sets the cache of the [Generator](<#Generator>).
+
 <a name="Generator"></a>
-## type [Generator](<https://github.com/conneroisu/twerge/blob/main/twerge.go#L63>)
+## type [Generator](<https://github.com/conneroisu/twerge/blob/main/twerge.go#L73>)
 
 Generator generates all the code needed to use Twerge statically.
 
@@ -341,7 +407,7 @@ func Default() *Generator
 Default returns the default [Generator](<#Generator>).
 
 <a name="New"></a>
-### func [New](<https://github.com/conneroisu/twerge/blob/main/twerge.go#L66>)
+### func [New](<https://github.com/conneroisu/twerge/blob/main/twerge.go#L76>)
 
 ```go
 func New(h Handler) *Generator
@@ -350,7 +416,7 @@ func New(h Handler) *Generator
 New creates a new Generator with the given non\-nil Handler.
 
 <a name="Generator.Cache"></a>
-### func \(Generator\) [Cache](<https://github.com/conneroisu/twerge/blob/main/twerge.go#L79>)
+### func \(Generator\) [Cache](<https://github.com/conneroisu/twerge/blob/main/twerge.go#L89>)
 
 ```go
 func (Generator) Cache() map[string]CacheValue
@@ -359,7 +425,7 @@ func (Generator) Cache() map[string]CacheValue
 Cache returns the cache of the [Generator](<#Generator>).
 
 <a name="Generator.It"></a>
-### func \(\*Generator\) [It](<https://github.com/conneroisu/twerge/blob/main/twerge.go#L97>)
+### func \(\*Generator\) [It](<https://github.com/conneroisu/twerge/blob/main/twerge.go#L107>)
 
 ```go
 func (g *Generator) It(classes string) string
@@ -372,7 +438,7 @@ If the class name already exists, it will return the existing class name.
 If the class name does not exist, it will generate a new class name and return it.
 
 <a name="Handler"></a>
-## type [Handler](<https://github.com/conneroisu/twerge/blob/main/twerge.go#L72-L76>)
+## type [Handler](<https://github.com/conneroisu/twerge/blob/main/twerge.go#L82-L86>)
 
 Handler is the interface that needs to be implemented to customize the behavior of the [Generator](<#Generator>).
 
