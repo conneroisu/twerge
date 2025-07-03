@@ -34,7 +34,7 @@ templ generate ./views
 
 3. Run the code generation:
 ```sh
-go run gen.go
+go run build.go
 ```
 
 4. Run the server:
@@ -47,6 +47,6 @@ go run main.go
 ## Notes
 
 - Each example follows the same structure with `views/`, `classes/`, and `_static/` directories
-- The `gen.go` file handles twerge code generation and TailwindCSS processing
+- The `build.go` file handles twerge code generation and TailwindCSS processing
 - `classes/classes.go` contains the generated class mappings
 - `input.css` and `tailwind.config.js` manage TailwindCSS configuration

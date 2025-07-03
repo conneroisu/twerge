@@ -17,7 +17,7 @@ templ generate
 
 2. Run the code generation:
 ```sh
-go run gen.go
+go run build.go
 ```
 
 3. Run the server:
