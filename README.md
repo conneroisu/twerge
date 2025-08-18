@@ -9,6 +9,8 @@
 
 generates tailwind merges and classes from go templ sources
 
+See the personal usage example [here](https://github.com/conneroisu/conneroh.com/tree/e8ee35b66dd76b68fdb660ba6cc48449394bbb4d).
+
 ## Usage
 
 You can install this library using the following command:
